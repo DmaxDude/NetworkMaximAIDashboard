@@ -404,7 +404,7 @@ function AgentStatusIcon({ status }) {
   return <span className="gs-agent-pending-dot" />
 }
 
-export default function CirclesInline() {
+export default function CirclesInline({ onResolveIncident }) {
   const [inputValue, setInputValue] = useState('')
   const [messages, setMessages] = useState([])
   const [selectedPersona, setSelectedPersona] = useState('maya')
@@ -512,6 +512,10 @@ export default function CirclesInline() {
         }, followUpMs)
         timers.current.push(ot, ft)
       }
+    } else if ((lower.includes('thankyou') || lower.includes('thank you')) && lower.includes('close') && lower.includes('issue')) {
+      addMsg({ type: 'user', text })
+      addMsg({ type: 'assistant', text: 'Sure. The issue has been closed and the ticket #20234 has been marked resolved.' })
+      onResolveIncident?.('INC-20234')
     } else {
       addMsg({ type: 'user', text })
       addMsg({ type: 'assistant', text: 'Thanks — checking the latest network impact and will update you shortly.' })

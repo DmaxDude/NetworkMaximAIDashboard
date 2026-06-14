@@ -5,7 +5,7 @@ import CirclesInline from './CirclesInline.jsx'
 
 const pageMeta = {
   dashboard: ['Live Dashboard', 'Manchester · Real-time Multi-AI Monitoring'],
-  issues: ['Active Issues', '3 open incidents across Manchester zones'],
+  issues: ['Active Issues', 'Incidents across Manchester zones'],
   greyskies: ['Grey Skies', 'OSS — Operations Support Systems'],
   circles: ['Circles', 'BSS — Business Support Systems'],
   agents: ['AI Agents', 'Multi-agent pipeline status'],
@@ -175,7 +175,6 @@ const reportIssues = [
 export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [activePage, setActivePage] = useState(initialPage)
   const [clock, setClock] = useState(formatClock)
-  const [openXai, setOpenXai] = useState({})
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false)
   const [stepStates, setStepStates] = useState(Array(stepCount).fill(''))
   const [shownSimItems, setShownSimItems] = useState({})
@@ -184,6 +183,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [isSimRunning, setIsSimRunning] = useState(false)
   const [showIncNotif, setShowIncNotif] = useState(true)
   const [selectedReportIssueId, setSelectedReportIssueId] = useState(reportIssues[0].id)
+  const [inc20234Resolved, setInc20234Resolved] = useState(false)
   const timers = useRef([])
   const simulatorBodyRef = useRef(null)
   const simulatorStepRefs = useRef([])
@@ -208,11 +208,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   }, [])
 
   const goTo = (page) => setActivePage(page)
-
-  const openAuditTrail = () => {
-    window.history.pushState({}, '', '/audit-trail')
-    window.dispatchEvent(new PopStateEvent('popstate'))
-  }
+  const activeIssueCount = inc20234Resolved ? 2 : 3
 
   const scrollSimulatorToStep = (index) => {
     const body = simulatorBodyRef.current
@@ -223,10 +219,6 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     const stepRect = step.getBoundingClientRect()
     const targetTop = Math.max(0, body.scrollTop + stepRect.top - bodyRect.top - 16)
     body.scrollTo({ top: targetTop, behavior: 'smooth' })
-  }
-
-  const toggleXai = (id) => {
-    setOpenXai((current) => ({ ...current, [id]: !current[id] }))
   }
 
   const resetSim = () => {
@@ -362,7 +354,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     </div>
     <div className={navClass('issues')} onClick={() => goTo('issues')}>
       <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-      Active Issues <span className="nbadge">3</span>
+      Active Issues <span className="nbadge">{activeIssueCount}</span>
     </div>
     <div className={navClass('greyskies')} onClick={() => goTo('greyskies')}>
       <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd"/></svg>
@@ -406,7 +398,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     <div className={pageClass('dashboard')} id="page-dashboard">
       <div className="str">
         <div className="card stat"><div className="slbl">Zones Monitored</div><div className="sval cb">12</div><div className="snote">Manchester Metro</div></div>
-        <div className="card stat"><div className="slbl">Active Issues</div><div className="sval cr">3</div><div className="snote">↑ 1 in last hour</div></div>
+        <div className="card stat"><div className="slbl">Active Issues</div><div className="sval cr">{activeIssueCount}</div><div className="snote">{inc20234Resolved ? 'INC-20234 resolved' : '↑ 1 in last hour'}</div></div>
         <div className="card stat"><div className="slbl">Avg MTTR</div><div className="sval cg">4.2m</div><div className="snote">↓ 60% vs baseline</div></div>
         <div className="card stat"><div className="slbl">AI Resolution</div><div className="sval cb">94%</div><div className="snote">↑ from 87% last week</div></div>
       </div>
@@ -467,7 +459,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* ISSUES */}
     <div className={pageClass('issues')} id="page-issues">
-      <div className="sh"><div><div className="stitle">Active Issues</div><div className="ssub">3 open incidents across Manchester zones</div></div>
+      <div className="sh"><div><div className="stitle">Active Issues</div><div className="ssub">{activeIssueCount} open incidents across Manchester zones</div></div>
         <div className="fr"><button className="fbtn on">All</button><button className="fbtn">High</button><button className="fbtn">Medium</button></div>
       </div>
       <div className="card tw">
@@ -475,11 +467,11 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           <thead><tr><th>Incident</th><th>Zone</th><th>Type</th><th>Sev</th><th>Status</th><th>Agent</th><th>OSS</th><th>BSS</th></tr></thead>
           <tbody>
             <tr>
-              <td><strong>#INC-20234</strong></td>
+              <td><strong>INC-20234</strong></td>
               <td>Trafford</td>
               <td>Service Degradation</td>
               <td><span className="sev H">High</span></td>
-              <td><span className="pill ac">● Active</span></td>
+              <td><span className={`pill ${inc20234Resolved ? 'rs' : 'ac'}`}>{inc20234Resolved ? '✓ Resolved' : '● Active'}</span></td>
               <td>network agent</td>
               <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
@@ -536,7 +528,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* CIRCLES */}
     <div className={pageClass('circles')} id="page-circles">
-      <CirclesInline />
+      <CirclesInline onResolveIncident={() => setInc20234Resolved(true)} />
     </div>
 
     {/* AGENTS */}
@@ -855,67 +847,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         </div>
       </div>
 
-      {/* ROW 3: Explainability Log + Policy Compliance */}
-      <div className="gov-grid2">
-
-        {/* Explainability Log */}
-        <div className="card gov-card" style={{gridColumn: '1/-1'}}>
-          <div className="gov-card-title"><span>🔍</span> Decision Explainability Log <span style={{fontSize: '10px', fontWeight: '400', color: 'var(--muted)', textTransform: 'none', letterSpacing: '0'}}>— Why did the AI do this?</span></div>
-          <div className="xai-list">
-
-            <div className="xai-item">
-              <div className="xai-head" onClick={() => toggleXai('x0')}>
-                <span className="xai-inc">INC-2041</span>
-                <span className="xai-action">Bandwidth rerouted autonomously via alternate path</span>
-                <span className="xai-agent">Remediation Sub-Agent</span>
-                <span className="xai-conf hi">97%</span>
-                <span className="xai-toggle" id="xt0">{openXai.x0 ? '▲' : '▼'}</span>
-              </div>
-              <div className={`xai-body ${openXai.x0 ? 'open' : ''}`} id="x0">
-                <div className="xai-reason"><strong>Root Cause:</strong> Fiber segment fault detected on Node MH-7→MH-9 · packet_loss: 34% · latency +320ms</div>
-                <div className="xai-reason"><strong>Decision Logic:</strong> RCA Sub-Agent confidence 97% exceeded 90% threshold → Remediation Sub-Agent authorised to reroute. Alternate path MH-7→MH-12→MH-9 available with sufficient capacity.</div>
-                <div className="xai-reason"><strong>Outcome:</strong> BW restored to 98% in 4.5 min · MTTR target met · No human intervention required</div>
-                <div className="xai-pills"><span className="xai-pill">Autonomous</span><span className="xai-pill">Policy: NET-AUTO-01</span><span className="xai-pill">Confidence: 97%</span><span className="xai-pill">Agent v2.4.1</span></div>
-              </div>
-            </div>
-
-            <div className="xai-item">
-              <div className="xai-head" onClick={() => toggleXai('x1')}>
-                <span className="xai-inc">INC-2041</span>
-                <span className="xai-action">15GB Data Add-on credited to 1,240 Midtown users</span>
-                <span className="xai-agent">Promotions Agent</span>
-                <span className="xai-conf hi">91%</span>
-                <span className="xai-toggle" id="xt1">{openXai.x1 ? '▲' : '▼'}</span>
-              </div>
-              <div className={`xai-body ${openXai.x1 ? 'open' : ''}`} id="x1">
-                <div className="xai-reason"><strong>Trigger:</strong> CX Agent passed cohort profile post-resolution · outage_duration: 14.5 min · avg_impact_score: 7.8</div>
-                <div className="xai-reason"><strong>Decision Logic:</strong> Segmentation Sub-Agent identified 1,240 eligible users · Offer Sub-Agent matched rule PROMO-STD-03: outage 10–20 min → 15GB add-on. Compensation within daily autonomous limit (₹42k of ₹100k).</div>
-                <div className="xai-reason"><strong>Outcome:</strong> 15GB add-on applied instantly · No billing anomaly · Churn risk score reduced by est. 12%</div>
-                <div className="xai-pills"><span className="xai-pill">Autonomous</span><span className="xai-pill">Policy: PROMO-STD-03</span><span className="xai-pill">Confidence: 91%</span><span className="xai-pill">Agent v1.9.0</span></div>
-              </div>
-            </div>
-
-            <div className="xai-item">
-              <div className="xai-head" onClick={() => toggleXai('x2')}>
-                <span className="xai-inc">INC-2035</span>
-                <span className="xai-action">Escalated to human NOC — autonomous resolution blocked</span>
-                <span className="xai-agent">Escalation Handler</span>
-                <span className="xai-conf md">62%</span>
-                <span className="xai-toggle" id="xt2">{openXai.x2 ? '▲' : '▼'}</span>
-              </div>
-              <div className={`xai-body ${openXai.x2 ? 'open' : ''}`} id="x2">
-                <div className="xai-reason"><strong>Root Cause:</strong> Node failure — physical hardware fault suspected · RCA Sub-Agent confidence 62% below 90% threshold</div>
-                <div className="xai-reason"><strong>Decision Logic:</strong> Confidence below autonomous action threshold. Remediation Sub-Agent could not identify safe reroute. Policy ESC-01 triggered: escalate to human NOC if confidence &lt; 90% and physical fault suspected.</div>
-                <div className="xai-reason"><strong>Outcome:</strong> Ticket INC-2035 assigned to Raj Patel (NOC). CX Agent notified 2,100 users. Compensation pending human approval per policy COMP-HUM-01.</div>
-                <div className="xai-pills"><span className="xai-pill">Human-in-Loop</span><span className="xai-pill">Policy: ESC-01</span><span className="xai-pill">Confidence: 62%</span><span className="xai-pill">Agent v2.4.1</span></div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 4: Policy Compliance + Audit Trail */}
+      {/* ROW 3: Policy Compliance + Audit Trail */}
       <div className="gov-grid2">
 
         {/* Policy Compliance */}
@@ -984,7 +916,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <span className="audit-type human">Human</span>
             </div>
           </div>
-          <button className="export-btn" type="button" onClick={openAuditTrail}>Export Audit Report</button>
+          <button className="export-btn" type="button">Download Audit Report</button>
         </div>
 
       </div>
