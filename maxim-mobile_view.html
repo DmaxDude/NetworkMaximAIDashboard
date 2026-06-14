@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Maxim — Mobile View</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --blue:#0053D6;--blue-lt:#E8F0FF;--dark:#001233;
+  --green:#00A86B;--green-lt:#E6F7F1;--green-dk:#007A4E;
+  --amber:#F59E0B;--amber-lt:#FEF9EE;--amber-dk:#92660A;
+  --red:#E03A3A;--red-lt:#FEF0F0;
+  --text:#0D1B2A;--muted:#6B7A90;--border:#E8EDF5;--bg:#F0F4FA;--surface:#FFF;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#C8D8EE;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+
+/* phone shell */
+.phone{width:390px;background:var(--surface);border-radius:48px;box-shadow:0 30px 80px rgba(0,18,60,.22),0 0 0 10px #1a2535,0 0 0 12px #2a3a55;overflow:hidden;position:relative;}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#1a2535;border-radius:0 0 20px 20px;z-index:10;display:flex;align-items:center;justify-content:center;gap:8px;}
+.notch-cam{width:10px;height:10px;border-radius:50%;background:#0D1B2A;border:1.5px solid #2a3a55;}
+.notch-mic{width:40px;height:5px;border-radius:3px;background:#0D1B2A;}
+
+/* status bar */
+.statusbar{background:var(--dark);padding:42px 22px 10px;display:flex;align-items:center;justify-content:space-between;}
+.sb-time{color:#fff;font-size:14px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.sb-icons{display:flex;align-items:center;gap:6px;}
+.sb-icon{width:16px;height:10px;display:flex;align-items:center;justify-content:center;}
+.sig{display:flex;align-items:flex-end;gap:1.5px;}
+.sig-bar{background:#fff;border-radius:1px;width:3px;}
+.batt{width:22px;height:10px;border:1.5px solid #fff;border-radius:3px;position:relative;display:flex;align-items:center;padding:1.5px;}
+.batt::after{content:'';width:2px;height:5px;background:#fff;border-radius:0 1px 1px 0;position:absolute;right:-4px;}
+.batt-fill{height:100%;background:#fff;border-radius:1.5px;width:75%;}
+.wifi{display:flex;flex-direction:column-reverse;align-items:center;gap:1px;}
+.wifi-arc{border:1.5px solid transparent;border-top-color:#fff;border-radius:50%;width:12px;height:12px;margin-bottom:-8px;}
+.wifi-arc:nth-child(2){width:7px;height:7px;margin-bottom:-5px;}
+.wifi-dot{width:3px;height:3px;border-radius:50%;background:#fff;}
+
+/* header bar */
+.appbar{background:var(--dark);padding:10px 22px 18px;display:flex;align-items:center;justify-content:space-between;}
+.app-brand{display:flex;align-items:center;gap:8px;}
+.app-ico{width:26px;height:26px;background:var(--blue);border-radius:6px;display:grid;place-items:center;}
+.app-ico span{color:#fff;font-size:7px;font-weight:700;}
+.app-nm{color:#fff;font-size:18px;font-weight:700;letter-spacing:-.5px;}
+.bell{width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:50%;display:grid;place-items:center;position:relative;}
+.bell svg{width:16px;height:16px;fill:rgba(255,255,255,.8);}
+.bell-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#E03A3A;border:1.5px solid var(--dark);}
+
+/* scroll body */
+.body{background:var(--bg);min-height:600px;padding:18px 16px 24px;}
+.section-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+
+/* alert cards */
+.alert{background:var(--surface);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+.alert-bar{height:4px;}
+.alert-bar.amber{background:var(--amber);}
+.alert-bar.green{background:var(--green);}
+.alert-bar.blue{background:var(--blue);}
+.alert-inner{padding:14px 16px;}
+.alert-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.alert-label{display:flex;align-items:center;gap:7px;}
+.alert-ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:14px;}
+.alert-ico.amber{background:var(--amber-lt);}
+.alert-ico.green{background:var(--green-lt);}
+.alert-ico.blue{background:var(--blue-lt);}
+.alert-type{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.alert-type.amber{color:var(--amber-dk);}
+.alert-type.green{color:var(--green-dk);}
+.alert-type.blue{color:var(--blue);}
+.alert-time{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.alert-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;}
+.alert-body{font-size:12px;color:var(--muted);line-height:1.5;}
+.alert-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.eta-badge{background:var(--amber-lt);color:var(--amber-dk);border-radius:20px;font-size:10px;font-weight:700;padding:3px 9px;}
+.no-action{color:var(--muted);font-size:10px;font-style:italic;}
+.resolved-badge{background:var(--green-lt);color:var(--green-dk);border-radius:20px;font-size:10px;font-weight:700;padding:3px 9px;}
+.promo-badge{background:var(--blue-lt);color:var(--blue);border-radius:20px;font-size:10px;font-weight:700;padding:3px 9px;}
+
+/* bottom nav */
+.bnav{background:var(--surface);border-top:1px solid var(--border);padding:10px 0 20px;display:flex;align-items:center;justify-content:space-around;}
+.bni{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 12px;}
+.bni svg{width:20px;height:20px;}
+.bni span{font-size:9px;font-weight:500;color:var(--muted);}
+.bni.active svg{fill:var(--blue);}
+.bni.active span{color:var(--blue);font-weight:700;}
+.bni svg{fill:var(--muted);}
+
+/* label top */
+.page-greeting{font-size:18px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.page-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <!-- notch -->
+  <div class="notch"><div class="notch-cam"></div><div class="notch-mic"></div></div>
+
+  <!-- status bar -->
+  <div class="statusbar">
+    <span class="sb-time" id="mob-clk">9:41</span>
+    <div class="sb-icons">
+      <div class="sig">
+        <div class="sig-bar" style="height:3px"></div>
+        <div class="sig-bar" style="height:5px"></div>
+        <div class="sig-bar" style="height:7px"></div>
+        <div class="sig-bar" style="height:9px"></div>
+      </div>
+      <div class="wifi">
+        <div class="wifi-dot"></div>
+        <div class="wifi-arc" style="width:7px;height:7px;margin-bottom:-4px"></div>
+        <div class="wifi-arc"></div>
+      </div>
+      <div class="batt"><div class="batt-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- app bar -->
+  <div class="appbar">
+    <div class="app-brand">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#0053D6 0%,#00B4D8 100%);border-radius:7px;display:grid;place-items:center;flex-shrink:0;">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="3" fill="#fff"/>
+          <circle cx="10" cy="10" r="6" stroke="#fff" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none"/>
+          <circle cx="10" cy="10" r="9" stroke="rgba(255,255,255,.4)" stroke-width="1" fill="none"/>
+          <line x1="10" y1="1" x2="10" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="10" y1="16" x2="10" y2="19" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="1" y1="10" x2="4" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="10" x2="19" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="app-nm">Maxim</div>
+    </div>
+    <div class="bell">
+      <svg viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+      <div class="bell-dot"></div>
+    </div>
+  </div>
+
+  <!-- body -->
+  <div class="body">
+    <div class="page-greeting">Service Alerts</div>
+    <div class="page-sub">3 notifications for you</div>
+
+    <div class="section-lbl">Active</div>
+
+    <!-- Alert 1: Outage Alert!-->
+    <div class="alert">
+      <div class="alert-bar amber"></div>
+      <div class="alert-inner">
+        <div class="alert-top">
+          <div class="alert-label">
+            <div class="alert-ico amber">🔧</div>
+            <span class="alert-type amber">Outage Alert!</span>
+          </div>
+          <span class="alert-time">09:00 AM</span>
+        </div>
+        <div class="alert-title">Critical Maintenance Required in your area</div>
+        <div class="alert-body">Internet Service will be briefly unavailable from now till 15 mins</div>
+        <div class="alert-footer">
+          <span class="eta-badge">ETA: Restored by 15 mins</span>
+          <span class="no-action">No action needed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-lbl" style="margin-top:4px">Recent</div>
+
+    <!-- Alert 2: Issue Resolved -->
+    <div class="alert">
+      <div class="alert-bar green"></div>
+      <div class="alert-inner">
+        <div class="alert-top">
+          <div class="alert-label">
+            <div class="alert-ico green">✅</div>
+            <span class="alert-type green">Issue Resolved</span>
+          </div>
+          <span class="alert-time">09:15 AM</span>
+        </div>
+        <div class="alert-title">Service Fully Restored</div>
+        <div class="alert-body">The internet issue in your area has been resolved. We apologise for any inconvenience.</div>
+        <div class="alert-footer">
+          <span class="resolved-badge">✓ Resolved</span>
+          <span class="no-action">No action needed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert 3: Promotion -->
+    <div class="alert">
+      <div class="alert-bar blue"></div>
+      <div class="alert-inner">
+        <div class="alert-top">
+          <div class="alert-label">
+            <div class="alert-ico blue">🎁</div>
+            <span class="alert-type blue">Promotion</span>
+          </div>
+          <span class="alert-time">09:17 AM</span>
+        </div>
+        <div class="alert-title">15GB Data Add-on credited</div>
+        <div class="alert-body">As a thank-you for your patience, we've added 15GB of Data Add-on pack to your account.</div>
+        <div class="alert-footer">
+          <span class="promo-badge">🎉 Applied to your plan</span>
+          <span class="no-action">No action needed</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- bottom nav -->
+  <div class="bnav">
+    <div class="bni active">
+      <svg viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+      <span>Alerts</span>
+    </div>
+    <div class="bni">
+      <svg viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="bni">
+      <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+      <span>Support</span>
+    </div>
+    <div class="bni">
+      <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+      <span>Account</span>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+function tick(){
+  const n=new Date();
+  let h=n.getHours(),m=n.getMinutes();
+  const ampm=h>=12?'PM':'AM';h=h%12||12;
+  document.getElementById('mob-clk').textContent=h+':'+(m<10?'0'+m:m)+' '+ampm;
+}
+tick();setInterval(tick,1000);
+</script>
+</body>
+</html>

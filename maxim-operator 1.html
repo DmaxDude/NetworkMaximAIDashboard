@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Maxim — Operator View</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --blue:#0053D6;--blue-lt:#E8F0FF;--dark:#001233;--green:#00A86B;--green-lt:#E6F7F1;
+  --amber:#F59E0B;--amber-lt:#FEF3C7;--red:#E03A3A;--red-lt:#FEE8E8;
+  --text:#0D1B2A;--muted:#6B7A90;--border:#E4E9F2;--bg:#F5F7FC;--surface:#FFF;--r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:216px;background:var(--dark);display:flex;flex-direction:column;flex-shrink:0;}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-hcl{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.hcl-mark{width:30px;height:30px;background:var(--blue);border-radius:6px;display:grid;place-items:center;}
+.hcl-mark span{color:#fff;font-size:9px;font-weight:700;letter-spacing:-.5px;}
+.hcl-label{color:rgba(255,255,255,.45);font-size:10px;font-weight:500;letter-spacing:.06em;}
+.app-name{color:#fff;font-size:24px;font-weight:700;letter-spacing:-1px;}
+.app-tag{color:rgba(255,255,255,.28);font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+nav{padding:14px 10px;flex:1;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;
+  color:rgba(255,255,255,.45);font-size:13px;font-weight:500;margin-bottom:2px;transition:all .15s;}
+.ni:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);}
+.ni.active{background:var(--blue);color:#fff;}
+.ni svg{width:16px;height:16px;flex-shrink:0;opacity:.8;}
+.nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;
+  border-radius:10px;padding:1px 6px;}
+.sf{padding:14px 14px 18px;border-top:1px solid rgba(255,255,255,.08);}
+.user{display:flex;align-items:center;gap:9px;}
+.av{width:32px;height:32px;border-radius:50%;background:var(--blue);display:grid;place-items:center;
+  color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.uname{color:#fff;font-size:12px;font-weight:600;}
+.urole{color:rgba(255,255,255,.35);font-size:10px;}
+.odot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);height:54px;padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tbtitle{font-size:15px;font-weight:600;}
+.tbsub{font-size:11px;color:var(--muted);margin-top:1px;}
+.tbr{display:flex;align-items:center;gap:12px;}
+.clk{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+.simbtn{display:flex;align-items:center;gap:7px;background:var(--blue);color:#fff;border:none;
+  border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.simbtn:hover{background:#003FBF;box-shadow:0 4px 16px rgba(0,83,214,.3);}
+.bl{width:7px;height:7px;border-radius:50%;background:#fff;animation:bl 1.2s infinite;}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
+.content{flex:1;overflow-y:auto;padding:24px 28px;}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);}
+.str{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat{padding:18px 20px;}
+.slbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.sval{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;}
+.snote{font-size:10px;color:var(--muted);margin-top:3px;}
+.cb{color:var(--blue)}.cg{color:var(--green)}.cr{color:var(--red)}.ca{color:var(--amber);}
+.dgrid{display:grid;grid-template-columns:1fr 300px;gap:16px;}
+.ch{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ctitle{font-size:13px;font-weight:600;}
+.lp{display:flex;align-items:center;gap:5px;background:var(--red-lt);color:var(--red);
+  border-radius:20px;font-size:10px;font-weight:700;padding:3px 9px;}
+.ld{width:5px;height:5px;border-radius:50%;background:var(--red);animation:bl 1s infinite;}
+.mapb{height:320px;background:#dde8f5;overflow:hidden;}
+.mapb svg{width:100%;height:100%;}
+.fi{display:flex;gap:10px;align-items:flex-start;padding:11px 16px;border-bottom:1px solid var(--border);}
+.fi:last-child{border-bottom:none;}
+.fd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.fd.r{background:var(--red)}.fd.g{background:var(--green)}.fd.a{background:var(--amber)}.fd.b{background:var(--blue);}
+.ftxt{font-size:12px;line-height:1.5;}
+.ftm{font-size:10px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg);padding:9px 16px;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;font-weight:600;}
+td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
+.pill{border-radius:20px;font-size:10px;font-weight:700;padding:3px 9px;display:inline-flex;align-items:center;gap:4px;}
+.pill.ac{background:var(--red-lt);color:var(--red);}
+.pill.rs{background:var(--green-lt);color:var(--green);}
+.pill.es{background:var(--amber-lt);color:#92660A;}
+.sev{border-radius:4px;font-size:10px;font-weight:700;padding:2px 7px;}
+.sev.H{background:var(--red-lt);color:var(--red)}.sev.M{background:var(--amber-lt);color:#92660A}.sev.L{background:var(--green-lt);color:var(--green);}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.acard{padding:20px;}
+.ahead{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.aico{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font-size:18px;}
+.in{background:var(--blue-lt)}.ic{background:var(--green-lt)}.ip{background:#FFF3E6}.ie{background:var(--red-lt);}
+.aname{font-size:13px;font-weight:600;}
+.atype{font-size:10px;color:var(--muted);}
+.asta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.sd{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sd.on{background:var(--green)}.sd.off{background:var(--muted)}.sd.wn{background:var(--red);}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.tag{background:var(--bg);border:1px solid var(--border);border-radius:5px;font-size:10px;padding:2px 7px;color:var(--muted);}
+.astat{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding-top:10px;border-top:1px solid var(--border);}
+.astat strong{color:var(--text);font-family:'JetBrains Mono',monospace;}
+.eclist{display:flex;flex-direction:column;gap:12px;}
+.ecc{padding:18px 20px;display:flex;align-items:center;gap:16px;}
+.ecn{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;width:40px;flex-shrink:0;}
+.ecb{flex:1;}
+.ect{font-size:13px;font-weight:600;margin-bottom:3px;}
+.ecm{font-size:11px;color:var(--muted);}
+.eca{font-size:11px;color:var(--blue);font-weight:600;margin-top:4px;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.tcard{padding:20px;}
+.tlbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.kpis{display:flex;gap:20px;}
+.kv{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;}
+.kn{font-size:10px;color:var(--muted);margin-top:2px;}
+.blist{display:flex;flex-direction:column;gap:9px;}
+.brow{display:flex;align-items:center;gap:10px;font-size:11px;}
+.blbl{width:110px;color:var(--muted);}
+.btrk{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;background:var(--blue);}
+.bfill.g{background:var(--green);}
+.bpct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);width:30px;text-align:right;}
+.ins{display:flex;flex-direction:column;gap:8px;}
+.in2{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;background:var(--bg);border-radius:7px;font-size:11px;line-height:1.5;}
+.in2 span:first-child{font-size:14px;flex-shrink:0;}
+.aprev{display:flex;gap:10px;}
+.ap{flex:1;background:var(--bg);border-radius:8px;padding:11px;border:1px solid var(--border);}
+.apt{font-size:11px;font-weight:700;margin-bottom:3px;}
+.apb{font-size:10px;color:var(--muted);line-height:1.5;}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.rc{padding:20px;cursor:pointer;transition:all .15s;}
+.rc:hover{border-color:var(--blue);box-shadow:0 4px 20px rgba(0,83,214,.08);}
+.rico{width:34px;height:34px;border-radius:8px;background:var(--bg);border:1px solid var(--border);
+  display:grid;place-items:center;font-size:16px;margin-bottom:10px;}
+.rt{font-size:13px;font-weight:600;margin-bottom:3px;}
+.rm{font-size:10px;color:var(--muted);}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,18,51,.65);z-index:999;
+  align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+#ov.open{display:flex;}
+.spanel{background:var(--surface);border-radius:14px;width:580px;max-width:94vw;box-shadow:0 30px 80px rgba(0,0,0,.22);overflow:hidden;}
+.shead{background:var(--dark);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;}
+.shtitle{color:#fff;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.shclose{background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:14px;display:grid;place-items:center;}
+.sbody{padding:22px;}
+.ssteps{display:flex;flex-direction:column;}
+.sstep{display:flex;gap:13px;opacity:.2;transition:opacity .4s;padding-bottom:18px;position:relative;}
+.sstep:last-child{padding-bottom:0;}
+.sstep.active{opacity:1;}
+.sstep.done{opacity:.5;}
+.stl{display:flex;flex-direction:column;align-items:center;}
+.stico{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--bg);
+  display:grid;place-items:center;font-size:15px;flex-shrink:0;transition:all .3s;z-index:1;}
+.sstep.active .stico{border-color:var(--blue);background:var(--blue-lt);box-shadow:0 0 0 4px rgba(0,83,214,.1);}
+.sstep.done .stico{border-color:var(--green);background:var(--green-lt);}
+.stline{flex:1;width:2px;background:var(--border);margin:3px 0;}
+.sstep.done .stline{background:var(--green);}
+.sstep:last-child .stline{display:none;}
+.stc{flex:1;padding-top:5px;}
+.stag{font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px;}
+.sdesc{font-size:12px;font-weight:500;}
+.sdet{font-size:11px;color:var(--muted);margin-top:2px;}
+.flow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.fn{border-radius:5px;font-size:10px;font-weight:700;padding:2px 8px;color:#fff;background:var(--blue);}
+.fn.g{background:var(--green)}.fn.s{background:var(--muted)}.fn.r{background:var(--red);}
+.arr{font-size:11px;color:var(--muted);}
+.apill{display:inline-flex;align-items:center;gap:5px;background:var(--green-lt);
+  border:1px solid rgba(0,168,107,.25);color:var(--green);border-radius:5px;
+  font-size:10px;font-weight:700;padding:3px 9px;margin-top:5px;}
+.spb{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:16px;}
+.spf{height:100%;background:var(--blue);width:0%;transition:width .5s;}
+.sfoot{padding:0 22px 18px;display:flex;gap:9px;}
+.brun{display:flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;
+  border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+.brun.r{background:var(--red);}
+.breset{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 14px;
+  font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;color:var(--text);}
+.enote{background:var(--amber-lt);border:1px solid rgba(245,158,11,.3);border-radius:7px;
+  padding:10px 13px;font-size:11px;margin-top:12px;display:none;line-height:1.5;}
+.enote.show{display:block;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.pv{display:none;} .pv.active{display:block;}
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.stitle{font-size:15px;font-weight:700;}
+.ssub{font-size:11px;color:var(--muted);margin-top:2px;}
+.fr{display:flex;gap:6px;}
+.fbtn{border:1px solid var(--border);background:var(--surface);border-radius:6px;padding:5px 12px;
+  font-size:11px;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;transition:all .1s;}
+.fbtn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+.mn{font-family:'JetBrains Mono',monospace;}
+
+/* ── AI GOVERNANCE PAGE ── */
+.gov-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.gov-kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;}
+.gov-kpi-top{display:flex;align-items:center;justify-content:space-between;}
+.gov-kpi-ico{font-size:18px;}
+.gov-kpi-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;}
+.gov-kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.gov-kpi-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+
+/* governance score ring */
+.gscore-wrap{display:flex;align-items:center;gap:14px;}
+.gscore-ring{position:relative;width:52px;height:52px;flex-shrink:0;}
+.gscore-ring svg{transform:rotate(-90deg);}
+.gscore-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);}
+
+/* two-col layout */
+.gov-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.gov-full{margin-bottom:14px;}
+.gov-card{padding:18px 20px;}
+.gov-card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.gov-card-title span{font-size:14px;}
+
+/* authorization matrix */
+.auth-table{width:100%;border-collapse:collapse;}
+.auth-table th{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+  padding:6px 10px;text-align:left;font-weight:600;background:var(--bg);border-bottom:1px solid var(--border);}
+.auth-table td{padding:9px 10px;font-size:11px;border-bottom:1px solid var(--border);}
+.auth-table tr:last-child td{border-bottom:none;}
+.auth-badge{border-radius:4px;font-size:9px;font-weight:700;padding:2px 7px;display:inline-flex;align-items:center;gap:3px;}
+.auth-auto{background:var(--green-lt);color:var(--green);}
+.auth-human{background:var(--amber-lt);color:#92660A;}
+.auth-block{background:var(--red-lt);color:var(--red);}
+
+/* compensation guardrails */
+.comp-meter{margin-bottom:12px;}
+.comp-meter-head{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;}
+.comp-meter-lbl{font-weight:600;}
+.comp-meter-val{color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.comp-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.comp-fill{height:100%;border-radius:4px;transition:width 1s;}
+.comp-fill.safe{background:var(--green);}
+.comp-fill.warn{background:var(--amber);}
+.comp-fill.over{background:var(--red);}
+.comp-flags{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.comp-flag{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;font-size:11px;line-height:1.4;}
+.comp-flag.ok{background:var(--green-lt);}
+.comp-flag.warn{background:var(--amber-lt);}
+.comp-flag-ico{font-size:13px;flex-shrink:0;}
+
+/* explainability / audit log */
+.xai-list{display:flex;flex-direction:column;gap:8px;}
+.xai-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.xai-head{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--bg);cursor:pointer;transition:background .15s;}
+.xai-head:hover{background:#edf0f8;}
+.xai-inc{font-size:11px;font-weight:700;width:80px;flex-shrink:0;}
+.xai-action{font-size:11px;flex:1;}
+.xai-agent{font-size:10px;color:var(--blue);font-weight:600;width:130px;flex-shrink:0;}
+.xai-conf{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:40px;text-align:right;flex-shrink:0;}
+.xai-conf.hi{color:var(--green);}
+.xai-conf.md{color:var(--amber);}
+.xai-toggle{color:var(--muted);font-size:11px;margin-left:8px;flex-shrink:0;}
+.xai-body{padding:10px 13px;font-size:11px;line-height:1.6;color:var(--muted);display:none;border-top:1px solid var(--border);background:#fff;}
+.xai-body.open{display:block;}
+.xai-reason{margin-bottom:6px;}
+.xai-reason strong{color:var(--text);}
+.xai-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.xai-pill{background:var(--blue-lt);color:var(--blue);border-radius:4px;font-size:9px;font-weight:700;padding:2px 7px;}
+
+/* policy compliance */
+.policy-list{display:flex;flex-direction:column;gap:7px;}
+.policy-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;background:var(--bg;)font-size:11px;}
+.policy-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.policy-dot.g{background:var(--green);}
+.policy-dot.a{background:var(--amber);}
+.policy-dot.r{background:var(--red);}
+.policy-name{flex:1;font-size:11px;}
+.policy-status{font-size:10px;font-weight:700;}
+.policy-status.g{color:var(--green);}
+.policy-status.a{color:#92660A;}
+.policy-status.r{color:var(--red);}
+
+/* audit export */
+.audit-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;}
+.audit-row:last-child{border-bottom:none;}
+.audit-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);width:70px;flex-shrink:0;}
+.audit-agent{color:var(--blue);font-weight:600;width:130px;flex-shrink:0;}
+.audit-action{flex:1;color:var(--text);}
+.audit-type{font-size:9px;font-weight:700;border-radius:4px;padding:2px 7px;}
+.audit-type.auto{background:var(--green-lt);color:var(--green);}
+.audit-type.human{background:var(--amber-lt);color:#92660A;}
+.audit-type.block{background:var(--red-lt);color:var(--red);}
+.export-btn{display:inline-flex;align-items:center;gap:6px;background:var(--dark);color:#fff;
+  border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;margin-top:12px;}
+.export-btn:hover{background:#002060;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#0053D6 0%,#00B4D8 100%);border-radius:10px;display:grid;place-items:center;flex-shrink:0;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="3" fill="#fff"/>
+          <circle cx="10" cy="10" r="6" stroke="#fff" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none"/>
+          <circle cx="10" cy="10" r="9" stroke="rgba(255,255,255,.4)" stroke-width="1" fill="none"/>
+          <line x1="10" y1="1" x2="10" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="10" y1="16" x2="10" y2="19" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="1" y1="10" x2="4" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="10" x2="19" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="app-name">Maxim</div>
+    </div>
+    <div class="app-tag">Multi-AI Network Ops</div>
+  </div>
+  <nav>
+    <div class="ni active" onclick="goto('dashboard',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+      Live Dashboard
+    </div>
+    <div class="ni" onclick="goto('issues',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+      Active Issues <span class="nbadge">3</span>
+    </div>
+    <div class="ni" onclick="goto('agents',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 14.094A5.973 5.973 0 004 17v1H1v-1a3 3 0 013.75-2.906z"/></svg>
+      AI Agents
+    </div>
+    <div class="ni" onclick="goto('escalations',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+      Escalations <span class="nbadge">1</span>
+    </div>
+    <div class="ni" onclick="goto('reports',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/></svg>
+      Reports
+    </div>
+    <div class="ni" onclick="goto('governance',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      AI Control Tower
+    </div>
+  </nav>
+  <div class="sf">
+    <div class="user">
+      <div class="av">KS</div>
+      <div><div class="uname">Kevin Smith</div><div class="urole">Network Operator</div></div>
+      <div class="odot"></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="tbtitle" id="pgt">Live Dashboard</div>
+      <div class="tbsub" id="pgs">Manchester · Real-time Multi-AI Monitoring</div>
+    </div>
+    <div class="tbr">
+      <span class="clk" id="clk">--:--:--</span>
+      <button class="simbtn" onclick="openSim()"><span class="bl"></span>Simulate Issue</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="pv active" id="page-dashboard">
+      <div class="str">
+        <div class="card stat"><div class="slbl">Zones Monitored</div><div class="sval cb">12</div><div class="snote">Manchester Metro</div></div>
+        <div class="card stat"><div class="slbl">Active Issues</div><div class="sval cr">3</div><div class="snote">↑ 1 in last hour</div></div>
+        <div class="card stat"><div class="slbl">Avg MTTR</div><div class="sval cg">4.2m</div><div class="snote">↓ 60% vs baseline</div></div>
+        <div class="card stat"><div class="slbl">AI Resolution</div><div class="sval cb">94%</div><div class="snote">↑ from 87% last week</div></div>
+      </div>
+      <div class="dgrid">
+        <div class="card">
+          <div class="ch">
+            <span class="ctitle">Manchester — Zone Map</span>
+            <span class="lp"><span class="ld"></span>LIVE</span>
+          </div>
+          <div class="mapb">
+            <svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg">
+              <rect width="560" height="320" fill="#D6E4F5"/>
+              <ellipse cx="490" cy="160" rx="55" ry="140" fill="#BDD0E8" opacity=".7"/>
+              <rect x="0" y="265" width="560" height="55" fill="#BDD0E8" opacity=".6"/>
+              <rect x="0" y="0" width="38" height="320" fill="#BDD0E8" opacity=".5"/>
+              <polygon points="238,32 272,28 286,72 292,118 282,175 268,228 248,270 222,278 208,242 204,192 210,140 216,90 225,58" fill="#C2D2EA" stroke="#8AAACF" stroke-width="1.5"/>
+              <line x1="214" y1="82" x2="288" y2="82" stroke="#A0B8D4" stroke-width=".5" opacity=".7"/>
+              <line x1="208" y1="132" x2="290" y2="132" stroke="#A0B8D4" stroke-width=".5" opacity=".7"/>
+              <line x1="206" y1="180" x2="283" y2="180" stroke="#A0B8D4" stroke-width=".5" opacity=".7"/>
+              <line x1="233" y1="32" x2="232" y2="276" stroke="#A0B8D4" stroke-width=".5" opacity=".7"/>
+              <line x1="258" y1="30" x2="256" y2="276" stroke="#A0B8D4" stroke-width=".5" opacity=".7"/>
+              <polygon points="252,32 308,22 358,32 362,82 326,90 292,86 268,70" fill="#C2D2EA" stroke="#8AAACF" stroke-width="1.5"/>
+              <polygon points="292,118 348,100 408,112 412,162 386,196 338,200 292,178" fill="#C2D2EA" stroke="#8AAACF" stroke-width="1.5"/>
+              <polygon points="262,270 318,258 368,274 378,300 338,316 268,316 248,300" fill="#C2D2EA" stroke="#8AAACF" stroke-width="1.5"/>
+              <ellipse cx="110" cy="282" rx="58" ry="28" fill="#C2D2EA" stroke="#8AAACF" stroke-width="1.5"/>
+              <circle cx="250" cy="140" r="18" fill="#E03A3A" opacity=".15"><animate attributeName="r" values="14;24;14" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".15;.04;.15" dur="2s" repeatCount="indefinite"/></circle>
+              <circle cx="250" cy="140" r="6" fill="#E03A3A"/>
+              <circle cx="306" cy="52" r="5" fill="#00A86B"/>
+              <circle cx="352" cy="150" r="5" fill="#00A86B"/>
+              <circle cx="296" cy="285" r="5" fill="#F59E0B"/>
+              <circle cx="110" cy="282" r="5" fill="#00A86B"/>
+              <circle cx="250" cy="200" r="5" fill="#00A86B"/>
+              <circle cx="232" cy="82" r="5" fill="#00A86B"/>
+              <text x="237" y="126" font-size="10" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Midtown</text>
+              <text x="237" y="137" font-size="8" fill="#E03A3A" font-family="Inter,sans-serif">⚠ Issue Active</text>
+              <text x="238" y="202" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Downtown</text>
+              <text x="294" y="46" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Bronx</text>
+              <text x="338" y="154" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Queens</text>
+              <text x="276" y="287" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Brooklyn</text>
+              <text x="84" y="286" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Staten Is.</text>
+              <text x="225" y="76" font-size="9" fill="#1a2a3a" font-family="Inter,sans-serif" font-weight="600">Uptown</text>
+              <rect x="12" y="12" width="110" height="55" rx="6" fill="white" opacity=".88"/>
+              <circle cx="24" cy="26" r="4" fill="#E03A3A"/><text x="32" y="30" font-size="8.5" fill="#333" font-family="Inter,sans-serif">Active Issue</text>
+              <circle cx="24" cy="41" r="4" fill="#F59E0B"/><text x="32" y="45" font-size="8.5" fill="#333" font-family="Inter,sans-serif">Degraded</text>
+              <circle cx="24" cy="56" r="4" fill="#00A86B"/><text x="32" y="60" font-size="8.5" fill="#333" font-family="Inter,sans-serif">Healthy</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ctitle">Event Feed</span></div>
+          <div class="fi"><div class="fd r"></div><div><div class="ftxt">Bandwidth degradation — Midtown cluster</div><div class="ftm">09:41:22 · Network Agent</div></div></div>
+          <div class="fi"><div class="fd a"></div><div><div class="ftxt">Service-Alert sent · 1,240 users notified</div><div class="ftm">09:41:48 · CX Agent</div></div></div>
+          <div class="fi"><div class="fd g"></div><div><div class="ftxt">Queens cluster — all systems nominal</div><div class="ftm">09:38:10 · Monitoring</div></div></div>
+          <div class="fi"><div class="fd g"></div><div><div class="ftxt">Promo credit applied — 890 users (Bronx)</div><div class="ftm">09:22:04 · Promotions Agent</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISSUES -->
+    <div class="pv" id="page-issues">
+      <div class="sh"><div><div class="stitle">Active Issues</div><div class="ssub">3 open incidents across Manchester zones</div></div>
+        <div class="fr"><button class="fbtn on">All</button><button class="fbtn">High</button><button class="fbtn">Medium</button></div>
+      </div>
+      <div class="card tw">
+        <table>
+          <thead><tr><th>Incident</th><th>Zone</th><th>Type</th><th>Sev</th><th>Status</th><th>Agent</th><th>ETA</th></tr></thead>
+          <tbody>
+            <tr><td><strong>INC-2041</strong></td><td>Midtown, Manhattan</td><td>Bandwidth Degradation</td><td><span class="sev H">High</span></td><td><span class="pill ac">● Active</span></td><td>Network Agent</td><td class="mn" style="font-size:11px">~12 min</td></tr>
+            <tr><td><strong>INC-2039</strong></td><td>Brooklyn</td><td>Packet Loss</td><td><span class="sev M">Med</span></td><td><span class="pill ac">● Active</span></td><td>Network Agent</td><td class="mn" style="font-size:11px">~28 min</td></tr>
+            <tr><td><strong>INC-2035</strong></td><td>Staten Island</td><td>Node Failure</td><td><span class="sev H">High</span></td><td><span class="pill es">⚡ Escalated</span></td><td>Human (NOC)</td><td class="mn" style="font-size:11px">TBD</td></tr>
+            <tr><td><strong>INC-2030</strong></td><td>Bronx</td><td>QoE Degradation</td><td><span class="sev L">Low</span></td><td><span class="pill rs">✓ Resolved</span></td><td>Network Agent</td><td class="mn" style="font-size:11px">Done</td></tr>
+            <tr><td><strong>INC-2028</strong></td><td>Queens</td><td>Latency Spike</td><td><span class="sev M">Med</span></td><td><span class="pill rs">✓ Resolved</span></td><td>Network Agent</td><td class="mn" style="font-size:11px">Done</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGENTS -->
+    <div class="pv" id="page-agents">
+      <div class="sh"><div><div class="stitle">AI Agents</div><div class="ssub">4 agents active in the multi-agent pipeline</div></div></div>
+      <div class="agrid">
+        <div class="card acard">
+          <div class="ahead"><div class="aico in">🌐</div><div><div class="aname">Network Service Agent</div><div class="atype">Primary Orchestrator</div></div></div>
+          <div class="asta"><div class="sd on"></div>Active — processing INC-2041</div>
+          <div class="tags"><span class="tag">RCA Sub-Agent</span><span class="tag">Remediation Sub-Agent</span><span class="tag">Monitoring Sub-Agent</span><span class="tag">Bandwidth Sub-Agent</span></div>
+          <div class="astat"><span>Resolved today</span><strong>18</strong></div>
+        </div>
+        <div class="card acard">
+          <div class="ahead"><div class="aico ic">💬</div><div><div class="aname">Customer Experience Agent</div><div class="atype">CX & Notifications</div></div></div>
+          <div class="asta"><div class="sd on"></div>Active — alerts dispatched</div>
+          <div class="tags"><span class="tag">Notification Sub-Agent</span><span class="tag">Cohort Sub-Agent</span></div>
+          <div class="astat"><span>Alerts sent today</span><strong>3,420</strong></div>
+        </div>
+        <div class="card acard">
+          <div class="ahead"><div class="aico ip">🎁</div><div><div class="aname">Promotions Agent</div><div class="atype">Compensation & CLV</div></div></div>
+          <div class="asta"><div class="sd off"></div>Idle — awaiting trigger</div>
+          <div class="tags"><span class="tag">Segmentation Sub-Agent</span><span class="tag">Offer Sub-Agent</span></div>
+          <div class="astat"><span>Promos applied today</span><strong>890</strong></div>
+        </div>
+        <div class="card acard">
+          <div class="ahead"><div class="aico ie">📞</div><div><div class="aname">Escalation Handler</div><div class="atype">Human-in-the-Loop</div></div></div>
+          <div class="asta" style="color:var(--red)"><div class="sd wn"></div>Active — INC-2035 escalated</div>
+          <div class="tags"><span class="tag">Ticket Sub-Agent</span><span class="tag">Routing Sub-Agent</span></div>
+          <div class="astat"><span>Escalations today</span><strong>1</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCALATIONS -->
+    <div class="pv" id="page-escalations">
+      <div class="sh"><div><div class="stitle">Escalations</div><div class="ssub">Human-in-the-loop incidents</div></div></div>
+      <div class="eclist">
+        <div class="card ecc">
+          <div class="ecn cr">01</div>
+          <div class="ecb">
+            <div class="ect">INC-2035 — Node Failure, Staten Island</div>
+            <div class="ecm">AI agents unable to resolve · Severity: High · ~2,100 users affected</div>
+            <div class="eca">Assigned → Raj Patel (NOC Team)</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">09:18 AM</div>
+            <div style="margin-top:6px"><span class="pill es">⚡ Open</span></div>
+          </div>
+        </div>
+        <div class="card ecc" style="opacity:.5">
+          <div class="ecn cg">02</div>
+          <div class="ecb">
+            <div class="ect">INC-2021 — Fibre Cut, Lower Manhattan</div>
+            <div class="ecm">Resolved by field team · Duration: 47 min</div>
+            <div class="eca">Handled by → Maria Chen (Field Ops)</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">Yesterday</div>
+            <div style="margin-top:6px"><span class="pill rs">✓ Closed</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOWER -->
+    <div class="pv" id="page-tower">
+      <div class="sh"><div><div class="stitle">AI Control Tower</div><div class="ssub">System-wide intelligence overview</div></div></div>
+      <div class="tgrid">
+        <div class="card tcard">
+          <div class="tlbl">Network Health</div>
+          <div class="kpis">
+            <div><div class="kv cb">94%</div><div class="kn">Uptime</div></div>
+            <div><div class="kv cg">60%</div><div class="kn">MTTR Reduction</div></div>
+            <div><div class="kv ca">3</div><div class="kn">Open Issues</div></div>
+          </div>
+        </div>
+        <div class="card tcard">
+          <div class="tlbl">Agent Efficiency</div>
+          <div class="blist">
+            <div class="brow"><span class="blbl">Network Agent</span><div class="btrk"><div class="bfill g" style="width:96%"></div></div><span class="bpct">96%</span></div>
+            <div class="brow"><span class="blbl">CX Agent</span><div class="btrk"><div class="bfill g" style="width:92%"></div></div><span class="bpct">92%</span></div>
+            <div class="brow"><span class="blbl">Promo Agent</span><div class="btrk"><div class="bfill" style="width:88%"></div></div><span class="bpct">88%</span></div>
+          </div>
+        </div>
+        <div class="card tcard" style="grid-column:1/-1">
+          <div class="tlbl">AI Insights</div>
+          <div class="ins">
+            <div class="in2"><span>🔍</span><span>Midtown cluster shows elevated packet loss for 3 consecutive days — flagged for preventive maintenance.</span></div>
+            <div class="in2"><span>📈</span><span>Customer satisfaction up 18% this week, correlated with faster Service-Alert delivery times.</span></div>
+            <div class="in2"><span>💡</span><span>Promotions Agent recommends proactive bonus data for Brooklyn cohort (1,200 users) — churn risk elevated.</span></div>
+            <div class="in2"><span>⚡</span><span>AI autonomous resolution at 94% today — exceeding the 55% operations target by 39 points.</span></div>
+          </div>
+        </div>
+        <div class="card tcard" style="grid-column:1/-1">
+          <div class="tlbl">Recent Service Alerts Sent to Users</div>
+          <div class="aprev">
+            <div class="ap"><div class="apt">🔧 Planned Outage</div><div class="apb">Maintenance tonight 2–4 AM. Back by 4 AM.</div></div>
+            <div class="ap"><div class="apt">✅ Issue Resolved</div><div class="apb">Service restored. 1GB roaming credit added — no action needed.</div></div>
+            <div class="ap"><div class="apt">🎁 Promotion</div><div class="apb">Bonus 2GB added this month — no action needed.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="pv" id="page-reports">
+      <div class="sh"><div><div class="stitle">Reports</div><div class="ssub">Operational & performance summaries</div></div></div>
+      <div class="rgrid">
+        <div class="card rc"><div class="rico">📊</div><div class="rt">Daily Incident Summary</div><div class="rm">Today · 5 incidents logged</div></div>
+        <div class="card rc"><div class="rico">🤖</div><div class="rt">Agent Activity</div><div class="rm">Today · 4 agents · 18 resolutions</div></div>
+        <div class="card rc"><div class="rico">📡</div><div class="rt">Network Health</div><div class="rm">Weekly · 12 zones</div></div>
+        <div class="card rc"><div class="rico">👥</div><div class="rt">Customer Impact</div><div class="rm">Alerts, resolutions, CLTV trends</div></div>
+        <div class="card rc"><div class="rico">🎁</div><div class="rt">Promotions Applied</div><div class="rm">Today · 890 users · zero manual effort</div></div>
+        <div class="card rc"><div class="rico">📈</div><div class="rt">MTTR Trend</div><div class="rm">60% improvement · 30-day view</div></div>
+      </div>
+    </div>
+
+    <!-- AI GOVERNANCE -->
+    <div class="pv" id="page-governance">
+      <div class="sh"><div><div class="stitle">AI Control Tower</div><div class="ssub">Trust, explainability, compliance & audit for all autonomous AI actions</div></div></div>
+
+      <!-- KPI ROW -->
+      <div class="gov-kpi-row">
+        <div class="card gov-kpi">
+          <div class="gov-kpi-top">
+            <div class="gov-kpi-ico">🛡️</div>
+            <div class="gscore-wrap">
+              <div class="gscore-ring">
+                <svg width="52" height="52" viewBox="0 0 52 52">
+                  <circle cx="26" cy="26" r="22" fill="none" stroke="#E4E9F2" stroke-width="4"/>
+                  <circle cx="26" cy="26" r="22" fill="none" stroke="#00A86B" stroke-width="4"
+                    stroke-dasharray="138 138" stroke-dashoffset="10" stroke-linecap="round"/>
+                </svg>
+                <div class="gscore-ring-num">94</div>
+              </div>
+            </div>
+          </div>
+          <div class="gov-kpi-val cg">94<span style="font-size:14px">/100</span></div>
+          <div class="gov-kpi-lbl">Governance Score</div>
+          <div class="gov-kpi-sub">↑ 3pts from last week</div>
+        </div>
+        <div class="card gov-kpi">
+          <div class="gov-kpi-top"><div class="gov-kpi-ico">📋</div></div>
+          <div class="gov-kpi-val cb">18</div>
+          <div class="gov-kpi-lbl">Policies Active</div>
+          <div class="gov-kpi-sub">All guardrails enforced</div>
+        </div>
+        <div class="card gov-kpi">
+          <div class="gov-kpi-top"><div class="gov-kpi-ico">⚡</div></div>
+          <div class="gov-kpi-val">47<span style="font-size:13px;color:var(--muted)"> / 50</span></div>
+          <div class="gov-kpi-lbl">Decisions Today</div>
+          <div class="gov-kpi-sub">47 autonomous · 3 human-approved</div>
+        </div>
+        <div class="card gov-kpi">
+          <div class="gov-kpi-top"><div class="gov-kpi-ico">🚩</div></div>
+          <div class="gov-kpi-val ca">2</div>
+          <div class="gov-kpi-lbl">Flags Raised</div>
+          <div class="gov-kpi-sub">1 blocked · 1 human-reviewed</div>
+        </div>
+      </div>
+
+      <!-- ROW 2: Authorization Matrix + Compensation Guardrails -->
+      <div class="gov-grid2">
+
+        <!-- Authorization Matrix -->
+        <div class="card gov-card">
+          <div class="gov-card-title"><span>✅</span> Action Authorization Matrix</div>
+          <table class="auth-table">
+            <thead>
+              <tr><th>Action</th><th>Agent</th><th>Threshold</th><th>Authorization</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>BW Rerouting</td><td>Network Agent</td><td>Any duration</td>
+                <td><span class="auth-badge auth-auto">● Autonomous</span></td>
+              </tr>
+              <tr>
+                <td>Service-Alert (Outage)</td><td>CX Agent</td><td>Any cohort size</td>
+                <td><span class="auth-badge auth-auto">● Autonomous</span></td>
+              </tr>
+              <tr>
+                <td>Data Add-on ≤ 15GB</td><td>Promotions Agent</td><td>Per incident</td>
+                <td><span class="auth-badge auth-auto">● Autonomous</span></td>
+              </tr>
+              <tr>
+                <td>Data Add-on &gt; 15GB</td><td>Promotions Agent</td><td>Per incident</td>
+                <td><span class="auth-badge auth-human">⚠ Human Approval</span></td>
+              </tr>
+              <tr>
+                <td>Credit / Refund</td><td>Promotions Agent</td><td>Any value</td>
+                <td><span class="auth-badge auth-human">⚠ Human Approval</span></td>
+              </tr>
+              <tr>
+                <td>Field Dispatch</td><td>Escalation Handler</td><td>Any</td>
+                <td><span class="auth-badge auth-block">✕ Blocked — Human Only</span></td>
+              </tr>
+              <tr>
+                <td>Mass Notification &gt;10k</td><td>CX Agent</td><td>&gt;10,000 users</td>
+                <td><span class="auth-badge auth-block">✕ Blocked — Human Only</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Compensation Guardrails -->
+        <div class="card gov-card">
+          <div class="gov-card-title"><span>💰</span> Compensation Guardrails</div>
+          <div class="comp-meter">
+            <div class="comp-meter-head"><span class="comp-meter-lbl">Daily Compensation Budget</span><span class="comp-meter-val">₹42k / ₹100k</span></div>
+            <div class="comp-track"><div class="comp-fill safe" style="width:42%"></div></div>
+          </div>
+          <div class="comp-meter">
+            <div class="comp-meter-head"><span class="comp-meter-lbl">Monthly Spend</span><span class="comp-meter-val">₹3.8L / ₹5L</span></div>
+            <div class="comp-track"><div class="comp-fill warn" style="width:76%"></div></div>
+          </div>
+          <div class="comp-meter">
+            <div class="comp-meter-head"><span class="comp-meter-lbl">Avg Compensation / User</span><span class="comp-meter-val">15GB · within policy</span></div>
+            <div class="comp-track"><div class="comp-fill safe" style="width:55%"></div></div>
+          </div>
+          <div class="comp-flags">
+            <div class="comp-flag ok"><span class="comp-flag-ico">✅</span><span>INC-2041 — 15GB add-on for 1,240 users · Rule matched: &lt;15 min outage → standard compensation · Auto-approved</span></div>
+            <div class="comp-flag warn"><span class="comp-flag-ico">⚠️</span><span>INC-2035 — Compensation pending human review · Node failure &gt;30 min · exceeds autonomous threshold</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3: Explainability Log + Policy Compliance -->
+      <div class="gov-grid2">
+
+        <!-- Explainability Log -->
+        <div class="card gov-card" style="grid-column:1/-1">
+          <div class="gov-card-title"><span>🔍</span> Decision Explainability Log <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">— Why did the AI do this?</span></div>
+          <div class="xai-list">
+
+            <div class="xai-item">
+              <div class="xai-head" onclick="toggleXai('x0')">
+                <span class="xai-inc">INC-2041</span>
+                <span class="xai-action">Bandwidth rerouted autonomously via alternate path</span>
+                <span class="xai-agent">Remediation Sub-Agent</span>
+                <span class="xai-conf hi">97%</span>
+                <span class="xai-toggle" id="xt0">▼</span>
+              </div>
+              <div class="xai-body" id="x0">
+                <div class="xai-reason"><strong>Root Cause:</strong> Fiber segment fault detected on Node MH-7→MH-9 · packet_loss: 34% · latency +320ms</div>
+                <div class="xai-reason"><strong>Decision Logic:</strong> RCA Sub-Agent confidence 97% exceeded 90% threshold → Remediation Sub-Agent authorised to reroute. Alternate path MH-7→MH-12→MH-9 available with sufficient capacity.</div>
+                <div class="xai-reason"><strong>Outcome:</strong> BW restored to 98% in 4.5 min · MTTR target met · No human intervention required</div>
+                <div class="xai-pills"><span class="xai-pill">Autonomous</span><span class="xai-pill">Policy: NET-AUTO-01</span><span class="xai-pill">Confidence: 97%</span><span class="xai-pill">Agent v2.4.1</span></div>
+              </div>
+            </div>
+
+            <div class="xai-item">
+              <div class="xai-head" onclick="toggleXai('x1')">
+                <span class="xai-inc">INC-2041</span>
+                <span class="xai-action">15GB Data Add-on credited to 1,240 Midtown users</span>
+                <span class="xai-agent">Promotions Agent</span>
+                <span class="xai-conf hi">91%</span>
+                <span class="xai-toggle" id="xt1">▼</span>
+              </div>
+              <div class="xai-body" id="x1">
+                <div class="xai-reason"><strong>Trigger:</strong> CX Agent passed cohort profile post-resolution · outage_duration: 14.5 min · avg_impact_score: 7.8</div>
+                <div class="xai-reason"><strong>Decision Logic:</strong> Segmentation Sub-Agent identified 1,240 eligible users · Offer Sub-Agent matched rule PROMO-STD-03: outage 10–20 min → 15GB add-on. Compensation within daily autonomous limit (₹42k of ₹100k).</div>
+                <div class="xai-reason"><strong>Outcome:</strong> 15GB add-on applied instantly · No billing anomaly · Churn risk score reduced by est. 12%</div>
+                <div class="xai-pills"><span class="xai-pill">Autonomous</span><span class="xai-pill">Policy: PROMO-STD-03</span><span class="xai-pill">Confidence: 91%</span><span class="xai-pill">Agent v1.9.0</span></div>
+              </div>
+            </div>
+
+            <div class="xai-item">
+              <div class="xai-head" onclick="toggleXai('x2')">
+                <span class="xai-inc">INC-2035</span>
+                <span class="xai-action">Escalated to human NOC — autonomous resolution blocked</span>
+                <span class="xai-agent">Escalation Handler</span>
+                <span class="xai-conf md">62%</span>
+                <span class="xai-toggle" id="xt2">▼</span>
+              </div>
+              <div class="xai-body" id="x2">
+                <div class="xai-reason"><strong>Root Cause:</strong> Node failure — physical hardware fault suspected · RCA Sub-Agent confidence 62% below 90% threshold</div>
+                <div class="xai-reason"><strong>Decision Logic:</strong> Confidence below autonomous action threshold. Remediation Sub-Agent could not identify safe reroute. Policy ESC-01 triggered: escalate to human NOC if confidence &lt; 90% and physical fault suspected.</div>
+                <div class="xai-reason"><strong>Outcome:</strong> Ticket INC-2035 assigned to Raj Patel (NOC). CX Agent notified 2,100 users. Compensation pending human approval per policy COMP-HUM-01.</div>
+                <div class="xai-pills"><span class="xai-pill">Human-in-Loop</span><span class="xai-pill">Policy: ESC-01</span><span class="xai-pill">Confidence: 62%</span><span class="xai-pill">Agent v2.4.1</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: Policy Compliance + Audit Trail -->
+      <div class="gov-grid2">
+
+        <!-- Policy Compliance -->
+        <div class="card gov-card">
+          <div class="gov-card-title"><span>📋</span> Policy Compliance Status</div>
+          <div class="policy-list">
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot g"></div><div class="policy-name">NET-AUTO-01 · Autonomous rerouting under 5 min outage</div><div class="policy-status g">Compliant</div>
+            </div>
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot g"></div><div class="policy-name">PROMO-STD-03 · 15GB add-on for 10–20 min outage</div><div class="policy-status g">Compliant</div>
+            </div>
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot g"></div><div class="policy-name">CX-NOTIF-01 · Alert within 2 min of detection</div><div class="policy-status g">Compliant</div>
+            </div>
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot a"></div><div class="policy-name">COMP-HUM-01 · Human approval for &gt;15GB compensation</div><div class="policy-status a">Pending Review</div>
+            </div>
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot g"></div><div class="policy-name">ESC-01 · Escalate if agent confidence &lt; 90%</div><div class="policy-status g">Compliant</div>
+            </div>
+            <div class="policy-row" style="background:var(--bg);border-radius:7px;padding:8px 10px;">
+              <div class="policy-dot g"></div><div class="policy-name">GOV-AUDIT-01 · All actions logged immutably</div><div class="policy-status g">Compliant</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regulatory Audit Trail -->
+        <div class="card gov-card">
+          <div class="gov-card-title"><span>📁</span> Regulatory Audit Trail</div>
+          <div>
+            <div class="audit-row">
+              <span class="audit-time">09:41:22</span>
+              <span class="audit-agent">Monitoring System</span>
+              <span class="audit-action">QoE anomaly detected — Midtown · BW 18%</span>
+              <span class="audit-type auto">Auto</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-time">09:41:35</span>
+              <span class="audit-agent">Network Agent</span>
+              <span class="audit-action">RCA sub-agents spawned for INC-2041</span>
+              <span class="audit-type auto">Auto</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-time">09:41:48</span>
+              <span class="audit-agent">CX Agent</span>
+              <span class="audit-action">Outage alert sent · 1,240 users · ETA 15 min</span>
+              <span class="audit-type auto">Auto</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-time">09:43:10</span>
+              <span class="audit-agent">Remediation Sub-Agent</span>
+              <span class="audit-action">Alternate route activated MH-7→MH-12→MH-9</span>
+              <span class="audit-type auto">Auto</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-time">09:46:02</span>
+              <span class="audit-agent">Promotions Agent</span>
+              <span class="audit-action">15GB add-on credited · 1,240 users · Policy PROMO-STD-03</span>
+              <span class="audit-type auto">Auto</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-time">09:18:04</span>
+              <span class="audit-agent">Escalation Handler</span>
+              <span class="audit-action">INC-2035 escalated to Raj Patel — confidence 62%</span>
+              <span class="audit-type human">Human</span>
+            </div>
+          </div>
+          <button class="export-btn">⬇ Export Audit Log (PDF / CSV)</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="ov">
+  <div class="spanel">
+    <div class="shead">
+      <span class="shtitle">⚡ Issue Simulator — Live Execution</span>
+      <button class="shclose" onclick="closeSim()">✕</button>
+    </div>
+    <div class="sbody">
+      <div class="ssteps">
+        <div class="sstep" id="s0">
+          <div class="stl"><div class="stico">📡</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">System Monitoring</div><div class="sdesc">Critical Network Slowdown — Manchester/Midtown Cluster</div><div class="sdet">Bandwidth drop to 18% · 1,240 users affected</div></div>
+        </div>
+        <div class="sstep" id="s1">
+          <div class="stl"><div class="stico">🤖</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">Network Service Agent</div><div class="sdesc">Issue identified — sub-agents spawned</div>
+            <div class="flow" id="f1" style="display:none"><span class="fn">Network Agent</span><span class="arr">→</span><span class="fn s">RCA Sub-Agent</span><span class="arr">+</span><span class="fn s">Remediation Sub-Agent</span></div>
+          </div>
+        </div>
+        <div class="sstep" id="s2">
+          <div class="stl"><div class="stico">🔔</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">Customer Experience Agent</div><div class="sdesc">Service-Alert dispatched to affected cohort</div>
+            <div class="flow" id="f2" style="display:none"><span class="fn">Network Agent</span><span class="arr">→</span><span class="fn g">CX Agent</span><span class="arr">→</span><span class="fn s">1,240 users</span></div>
+            <div class="apill" id="a2" style="display:none">📱 Internet Outage — ETA 15 min</div>
+          </div>
+        </div>
+        <div class="sstep" id="s3">
+          <div class="stl"><div class="stico">🔧</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">Network Service Agent — Remediation</div><div class="sdesc">Fix applied — alternate route activated, services restored</div>
+            <div class="sdet" id="d3" style="display:none">Bandwidth restored to 98% · MTTR: 4.5 min</div>
+          </div>
+        </div>
+        <div class="sstep" id="s4">
+          <div class="stl"><div class="stico">✅</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">Customer Experience Agent</div><div class="sdesc">Resolution alert sent to users</div>
+            <div class="apill" id="a4" style="display:none">📱 Service restored.</div>
+          </div>
+        </div>
+        <div class="sstep" id="s5">
+          <div class="stl"><div class="stico">🎁</div><div class="stline"></div></div>
+          <div class="stc"><div class="stag">Promotions Agent</div><div class="sdesc">Compensation applied to affected cohort</div>
+            <div class="apill" id="a5" style="display:none;background:#FFF3E6;border-color:rgba(224,123,0,.25);color:#B85E00">📱 15GB data add-on credited— no action needed 🎉</div>
+          </div>
+        </div>
+      </div>
+      <div class="enote" id="en">
+        <strong>⚡ Escalation Path Active</strong> — Network Agents could not resolve autonomously.
+        Ticket raised and assigned to human NOC agent (Raj Patel). Human-in-the-loop engaged.
+      </div>
+      <div class="spb"><div class="spf" id="prog"></div></div>
+    </div>
+    <div class="sfoot">
+      <button class="brun" id="bh" onclick="runSim(false)">▶ Simulate Autonomous Resolution</button>
+      <button class="brun r" id="be" onclick="runSim(true)">⚡ Simulate Escalation to Human Agent</button>
+      <button class="breset" onclick="resetSim()">↺ Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});},1000);
+const PM={dashboard:['Live Dashboard','Manchester · Real-time Multi-AI Monitoring'],issues:['Active Issues','3 open incidents across Manchester zones'],agents:['AI Agents','Multi-agent pipeline status'],escalations:['Escalations','Human-in-the-loop incidents'],reports:['Reports','Operational & performance summaries'],governance:['AI Control Tower','Trust · Explainability · Compliance · Audit']};
+function goto(p,el){document.querySelectorAll('.pv').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');document.getElementById('pgt').textContent=PM[p][0];document.getElementById('pgs').textContent=PM[p][1];}
+function toggleXai(id){const b=document.getElementById(id);const t=document.getElementById('x'+id.slice(1).replace('x','')+'t');const isOpen=b.classList.contains('open');b.classList.toggle('open');const toggleEl=b.previousElementSibling.querySelector('.xai-toggle');if(toggleEl)toggleEl.textContent=isOpen?'▼':'▲';}
+function openSim(){resetSim();document.getElementById('ov').classList.add('open');}
+function closeSim(){document.getElementById('ov').classList.remove('open');}
+document.getElementById('ov').onclick=e=>{if(e.target===document.getElementById('ov'))closeSim();};
+function resetSim(){
+  for(let i=0;i<6;i++){const s=document.getElementById('s'+i);s.classList.remove('active','done');}
+  ['f1','f2','a2','a4','a5','d3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('en').classList.remove('show');
+  document.getElementById('bh').disabled=false;document.getElementById('be').disabled=false;
+}
+function runSim(esc){
+  resetSim();document.getElementById('bh').disabled=true;document.getElementById('be').disabled=true;
+  const happy=[{d:400},{d:1500,sh:['f1']},{d:2800,sh:['f2','a2']},{d:4200,sh:['d3']},{d:5600,sh:['a4']},{d:7000,sh:['a5']}];
+  const escPath=[{d:400},{d:1500,sh:['f1']},{d:2800,sh:['f2','a2']}];
+  const steps=esc?escPath:happy;
+  steps.forEach((cfg,i)=>{
+    setTimeout(()=>{
+      if(i>0)document.getElementById('s'+(i-1)).classList.replace('active','done');
+      document.getElementById('s'+i).classList.add('active');
+      (cfg.sh||[]).forEach(id=>{
+        const el=document.getElementById(id);if(!el)return;
+        if(id.startsWith('f'))el.style.display='flex';
+        else if(id==='d3')el.style.display='block';
+        else el.style.display='inline-flex';
+      });
+      document.getElementById('prog').style.width=Math.round(((i+1)/steps.length)*100)+'%';
+      if(i===steps.length-1){setTimeout(()=>{document.getElementById('s'+i).classList.replace('active','done');if(esc)document.getElementById('en').classList.add('show');},800);}
+    },cfg.d);
+  });
+}
+</script>
+</body>
+</html>

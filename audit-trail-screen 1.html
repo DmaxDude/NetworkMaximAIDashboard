@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Maxim — Regulatory Audit Trail</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FC;}
+.app{display:flex;height:100vh;min-height:700px;}
+.sidebar{width:210px;background:#001233;display:flex;flex-direction:column;flex-shrink:0;}
+.brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-row{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.brand-ico{width:30px;height:30px;background:linear-gradient(135deg,#0053D6,#00B4D8);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-name{color:#fff;font-size:20px;font-weight:700;letter-spacing:-.5px;}
+.brand-tag{color:rgba(255,255,255,.3);font-size:9px;letter-spacing:.08em;text-transform:uppercase;}
+.nav{padding:12px 8px;flex:1;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;cursor:pointer;color:rgba(255,255,255,.4);font-size:12px;font-weight:500;margin-bottom:2px;}
+.ni.active{background:#0053D6;color:#fff;}
+.ni svg{width:15px;height:15px;flex-shrink:0;}
+.nb{margin-left:auto;background:#E03A3A;color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px;}
+.user-row{padding:12px 14px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:8px;}
+.av{width:30px;height:30px;border-radius:50%;background:#0053D6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;}
+.uname{color:#fff;font-size:11px;font-weight:600;}
+.urole{color:rgba(255,255,255,.35);font-size:9px;}
+.odot{width:6px;height:6px;border-radius:50%;background:#00A86B;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;border-bottom:1px solid #E4E9F2;height:52px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tb-title{font-size:14px;font-weight:700;color:#0D1B2A;}
+.tb-sub{font-size:10px;color:#6B7A90;margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.clk{font-family:monospace;font-size:11px;color:#6B7A90;}
+.sim-btn{display:flex;align-items:center;gap:6px;background:#0053D6;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;}
+.blink{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.content{flex:1;overflow-y:auto;padding:20px 24px;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:#fff;border-radius:10px;border:1px solid #E4E9F2;padding:14px 16px;}
+.kpi-lbl{font-size:9px;color:#6B7A90;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.kpi-val{font-family:monospace;font-size:24px;font-weight:700;}
+.kpi-note{font-size:9px;color:#6B7A90;margin-top:2px;}
+.cb{color:#0053D6;}.cg{color:#00A86B;}.ca{color:#F59E0B;}
+.gscore{display:flex;align-items:center;gap:10px;}
+.ring-wrap{position:relative;width:44px;height:44px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;font-weight:700;color:#00A86B;}
+.sec-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.sec-title{font-size:14px;font-weight:700;color:#0D1B2A;}
+.sec-sub{font-size:10px;color:#6B7A90;margin-top:2px;}
+.export-btns{display:flex;align-items:center;gap:8px;}
+.ebtn{display:flex;align-items:center;gap:5px;border:1px solid #E4E9F2;background:#fff;border-radius:6px;padding:5px 11px;font-size:10px;font-weight:600;cursor:pointer;color:#0D1B2A;}
+.ebtn.primary{background:#001233;color:#fff;border-color:#001233;}
+.panel{background:#fff;border-radius:10px;border:1px solid #E4E9F2;}
+.filter-row{padding:10px 16px;border-bottom:1px solid #E4E9F2;display:flex;align-items:center;gap:8px;}
+.fi-lbl{font-size:10px;color:#6B7A90;margin-right:4px;}
+.fbtn{border:1px solid #E4E9F2;background:#fff;border-radius:5px;padding:4px 10px;font-size:10px;cursor:pointer;color:#6B7A90;}
+.fbtn.on{border-color:#0053D6;color:#0053D6;background:#E8F0FF;font-weight:600;}
+.search-box{margin-left:auto;border:1px solid #E4E9F2;border-radius:5px;padding:4px 10px;font-size:10px;color:#6B7A90;width:140px;background:#F5F7FC;}
+table{width:100%;border-collapse:collapse;}
+th{background:#F5F7FC;padding:8px 12px;font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:#6B7A90;text-align:left;font-weight:600;border-bottom:1px solid #E4E9F2;}
+td{padding:10px 12px;font-size:11px;border-bottom:1px solid #E4E9F2;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#F9FAFB;}
+.inc-id{font-family:monospace;font-size:10px;font-weight:700;color:#0053D6;}
+.ts{font-family:monospace;font-size:10px;color:#6B7A90;}
+.agent-nm{font-size:10px;font-weight:600;color:#0D1B2A;}
+.agent-sub{font-size:9px;color:#6B7A90;margin-top:1px;}
+.action-txt{font-size:11px;color:#0D1B2A;}
+.action-detail{font-size:9px;color:#6B7A90;margin-top:2px;line-height:1.4;}
+.policy-ref{font-size:9px;font-weight:700;color:#0053D6;background:#E8F0FF;border-radius:3px;padding:1px 5px;margin-top:3px;display:inline-block;margin-right:3px;}
+.conf-hi{font-family:monospace;font-size:10px;font-weight:700;color:#00A86B;}
+.conf-md{font-family:monospace;font-size:10px;font-weight:700;color:#F59E0B;}
+.tb{border-radius:3px;font-size:9px;font-weight:700;padding:2px 6px;display:inline-flex;align-items:center;gap:3px;}
+.t-auto{background:#E6F7F1;color:#005A35;}
+.t-human{background:#FEF9EE;color:#7A5200;}
+.t-block{background:#FEE8E8;color:#7A0000;}
+.ok{color:#00A86B;font-size:10px;font-weight:600;}
+.pend{color:#F59E0B;font-size:10px;font-weight:600;}
+.hl td{background:#FFFDE7 !important;}
+.summary-bar{display:flex;align-items:center;gap:20px;padding:10px 16px;background:#F5F7FC;border-top:1px solid #E4E9F2;border-radius:0 0 10px 10px;}
+.sb-item{font-size:10px;color:#6B7A90;}
+.sb-item strong{color:#0D1B2A;}
+.pagination{margin-left:auto;display:flex;align-items:center;gap:4px;}
+.pg-btn{border:1px solid #E4E9F2;background:#fff;border-radius:4px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;color:#6B7A90;}
+.pg-btn.active{background:#0053D6;color:#fff;border-color:#0053D6;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-row">
+        <div class="brand-ico">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="3" fill="#fff"/>
+            <circle cx="10" cy="10" r="6" stroke="#fff" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none"/>
+            <circle cx="10" cy="10" r="9" stroke="rgba(255,255,255,.4)" stroke-width="1" fill="none"/>
+            <line x1="10" y1="1" x2="10" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="10" y1="16" x2="10" y2="19" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="1" y1="10" x2="4" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="10" x2="19" y2="10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">Maxim</span>
+      </div>
+      <div class="brand-tag">Multi-AI Network Ops</div>
+    </div>
+    <nav class="nav">
+      <div class="ni"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Live Dashboard</div>
+      <div class="ni"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>Active Issues <span class="nb">3</span></div>
+      <div class="ni"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 14.094A5.973 5.973 0 004 17v1H1v-1a3 3 0 013.75-2.906z"/></svg>AI Agents</div>
+      <div class="ni"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>Escalations <span class="nb">1</span></div>
+      <div class="ni"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/></svg>Reports</div>
+      <div class="ni active"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>AI Control Tower</div>
+    </nav>
+    <div class="user-row">
+      <div class="av">KS</div>
+      <div><div class="uname">Adam Smith</div><div class="urole">Network Operator</div></div>
+      <div class="odot"></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="tb-title">AI Control Tower</div>
+        <div class="tb-sub">Trust · Explainability · Compliance · Audit</div>
+      </div>
+      <div class="tb-right">
+        <span class="clk" id="clk">09:47:22 AM</span>
+        <button class="sim-btn"><span class="blink"></span>Simulate Issue</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-lbl">Governance Score</div>
+          <div class="gscore">
+            <div>
+              <div class="kpi-val cg">94<span style="font-size:13px">/100</span></div>
+              <div class="kpi-note">All systems within policy</div>
+            </div>
+            <div class="ring-wrap" style="margin-left:auto">
+              <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#E4E9F2" stroke-width="3.5"/>
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#00A86B" stroke-width="3.5" stroke-dasharray="107 113" stroke-linecap="round"/>
+              </svg>
+              <div class="ring-num">94</div>
+            </div>
+          </div>
+        </div>
+        <div class="kpi"><div class="kpi-lbl">Policies Active</div><div class="kpi-val cb">18</div><div class="kpi-note">All guardrails enforced</div></div>
+        <div class="kpi"><div class="kpi-lbl">Decisions Today</div><div class="kpi-val">47<span style="font-size:12px;color:#6B7A90"> / 50</span></div><div class="kpi-note">47 autonomous · 3 human-approved</div></div>
+        <div class="kpi"><div class="kpi-lbl">Flags Raised</div><div class="kpi-val ca">2</div><div class="kpi-note">1 blocked · 1 human-reviewed</div></div>
+      </div>
+
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">Regulatory Audit Trail</div>
+          <div class="sec-sub">Complete immutable log · INC-2041 Critical Network Slowdown — Midtown &amp; INC-2035 Node Failure — Staten Island · 09:18 – 09:47 AM</div>
+        </div>
+        <div class="export-btns">
+          <button class="ebtn">&#8595; Export CSV</button>
+          <button class="ebtn">&#8595; Export PDF</button>
+          <button class="ebtn primary">&#8595; Export Word</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="filter-row">
+          <span class="fi-lbl">Filter:</span>
+          <button class="fbtn on">All (9)</button>
+          <button class="fbtn">Autonomous</button>
+          <button class="fbtn">Human-approved</button>
+          <button class="fbtn">Flagged</button>
+          <input class="search-box" placeholder="Search agent or incident…"/>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:68px">Incident</th>
+              <th style="width:76px">Timestamp</th>
+              <th style="width:140px">Agent</th>
+              <th>Action &amp; Detail</th>
+              <th style="width:54px">Confidence</th>
+              <th style="width:68px">Type</th>
+              <th style="width:64px">Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:41:22</span></td>
+              <td><div class="agent-nm">Monitoring System</div><div class="agent-sub">Sensor · Auto-trigger</div></td>
+              <td><div class="action-txt">QoE anomaly detected — Midtown cluster</div><div class="action-detail">Bandwidth: 18% of normal · Users affected: 1,240 · Latency spike: +320ms</div><span class="policy-ref">CX-NOTIF-01</span></td>
+              <td><span class="conf-hi">—</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Detected</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:41:35</span></td>
+              <td><div class="agent-nm">Network Service Agent</div><div class="agent-sub">RCA Sub-Agent spawned</div></td>
+              <td><div class="action-txt">Root cause analysis · fiber fault MH-7→MH-9 identified</div><div class="action-detail">packet_loss: 34% · confidence threshold check: passed (97% &gt; 90%)</div><span class="policy-ref">NET-AUTO-01</span></td>
+              <td><span class="conf-hi">97%</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:41:48</span></td>
+              <td><div class="agent-nm">CX Agent</div><div class="agent-sub">Notification Sub-Agent</div></td>
+              <td><div class="action-txt">Outage Alert dispatched · 1,240 Midtown users notified</div><div class="action-detail">"Critical Network Slowdown in your area — ETA 15 min" · Cohort dual-source verified · delivery: 99.2%</div><span class="policy-ref">CX-NOTIF-01</span><span class="policy-ref">CX-COHORT-01</span></td>
+              <td><span class="conf-hi">—</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Sent</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:43:10</span></td>
+              <td><div class="agent-nm">Remediation Sub-Agent</div><div class="agent-sub">Network Service Agent</div></td>
+              <td><div class="action-txt">Alternate route activated · MH-7 → MH-12 → MH-9</div><div class="action-detail">BW restored: 98% · MTTR: 4.5 min · latency: 12ms · packet_loss: 0.1%</div><span class="policy-ref">NET-AUTO-01</span></td>
+              <td><span class="conf-hi">97%</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Restored</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:46:02</span></td>
+              <td><div class="agent-nm">CX Agent</div><div class="agent-sub">Notification Sub-Agent</div></td>
+              <td><div class="action-txt">Resolution alert sent · "Service Fully Restored"</div><div class="action-detail">1,240 users · "The network issue has been resolved. We apologise for any inconvenience." · delivery: 99.4%</div><span class="policy-ref">CX-NOTIF-01</span></td>
+              <td><span class="conf-hi">—</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Sent</span></td>
+            </tr>
+            <tr class="hl">
+              <td><span class="inc-id">INC-2041</span></td>
+              <td><span class="ts">09:46:18</span></td>
+              <td><div class="agent-nm">Promotions Agent</div><div class="agent-sub">Offer Sub-Agent</div></td>
+              <td><div class="action-txt">15GB Data Add-on credited · 1,240 Midtown users</div><div class="action-detail">Rule matched: PROMO-STD-01 · outage: 14.5 min · budget consumed: ₹42k of ₹100k daily cap</div><span class="policy-ref">PROMO-STD-01</span><span class="policy-ref">COMP-BUDGET-01</span></td>
+              <td><span class="conf-hi">91%</span></td>
+              <td><span class="tb t-auto">Auto</span></td>
+              <td><span class="ok">Applied</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2035</span></td>
+              <td><span class="ts">09:18:04</span></td>
+              <td><div class="agent-nm">Escalation Handler</div><div class="agent-sub">Routing Sub-Agent</div></td>
+              <td><div class="action-txt">Escalated to human NOC · confidence below 90% threshold</div><div class="action-detail">RCA confidence: 62% · physical fault suspected · assigned: Raj Patel (NOC)</div><span class="policy-ref">ESC-01</span></td>
+              <td><span class="conf-md">62%</span></td>
+              <td><span class="tb t-human">Human</span></td>
+              <td><span class="pend">Pending</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2035</span></td>
+              <td><span class="ts">09:18:31</span></td>
+              <td><div class="agent-nm">Promotions Agent</div><div class="agent-sub">Offer Sub-Agent</div></td>
+              <td><div class="action-txt">Compensation blocked — exceeds autonomous threshold</div><div class="action-detail">Proposed: 30GB · 2,100 users · exceeds 15GB autonomous limit · routed to human approval queue</div><span class="policy-ref">PROMO-HUM-01</span></td>
+              <td><span class="conf-md">—</span></td>
+              <td><span class="tb t-block">Blocked</span></td>
+              <td><span class="pend">Awaiting</span></td>
+            </tr>
+            <tr>
+              <td><span class="inc-id">INC-2035</span></td>
+              <td><span class="ts">09:32:11</span></td>
+              <td><div class="agent-nm">Kevin Smith</div><div class="agent-sub">Operator · Human Override</div></td>
+              <td><div class="action-txt">Human override — 30GB compensation approved after review</div><div class="action-detail">Reason: prolonged outage &gt;30 min · approved for 2,100 users · override logged with timestamp</div><span class="policy-ref">HUMAN-OVER-01</span><span class="policy-ref">PROMO-HUM-01</span></td>
+              <td><span class="conf-hi">—</span></td>
+              <td><span class="tb t-human">Human</span></td>
+              <td><span class="ok">Approved</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="summary-bar">
+          <div class="sb-item">Total events: <strong>9</strong></div>
+          <div class="sb-item">Autonomous: <strong>6</strong></div>
+          <div class="sb-item">Human-approved: <strong>2</strong></div>
+          <div class="sb-item">Blocked &amp; reviewed: <strong>1</strong></div>
+          <div class="sb-item">Incidents: <strong>INC-2041 · INC-2035</strong></div>
+          <div class="pagination">
+            <button class="pg-btn">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function tick(){const n=new Date();let h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();const ap=h>=12?'PM':'AM';h=h%12||12;document.getElementById('clk').textContent=h+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s)+' '+ap;}
+tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
