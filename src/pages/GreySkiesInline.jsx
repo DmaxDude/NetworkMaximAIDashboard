@@ -335,14 +335,14 @@ function GreyWorkspace({ onClose, onOpenCircles }) {
                 {deepStep === 'idle' && (
                   <div className="gsky-next gsky-choice-list">
                     <strong>WHAT'S NEXT?</strong>
-                    <button onClick={() => setDeepStep('typing')}><span className="play">◎</span> <span>Start deep Invigation</span></button>
+                    <button onClick={() => setDeepStep('typing')}><span className="play">◎</span> <span>Start deep Investigation</span></button>
                   </div>
                 )}
 
                 {deepStep !== 'idle' && (
                   <>
                     <div className="gsky-user-query">
-                      <span>Start deep Invigation</span>
+                      <span>Start deep Investigation</span>
                     </div>
 
                     {deepStep === 'typing' && (
