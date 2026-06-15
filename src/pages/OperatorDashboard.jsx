@@ -352,8 +352,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     <div className="app-tag">Multi-AI Network Ops</div>
     <div className="powered-by">Powered by:</div>
     <div className="powered-logos" aria-label="Powered by GreySkies and Circles">
-      <img src="/greyskies-powered-logo.png" alt="GreySkies" />
-      <img src="/circles-powered-logo.png" alt="Circles" />
+      <img src="/powered-logo.svg" alt="GreySkies and Circles" />
     </div>
   </div>
   <nav>
