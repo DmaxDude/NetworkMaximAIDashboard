@@ -238,7 +238,7 @@ function buildOperatorComponent(component, css, wrapper, title, jsxBody) {
   agents: ['AI Agents', 'Multi-agent pipeline status'],
   escalations: ['Escalations', 'Human-in-the-loop incidents'],
   tower: ['AI Control Tower', 'System-wide intelligence overview'],
-  reports: ['Reports', 'Operational & performance summaries'],
+  reports: ['Reports', 'Operational & Performance summaries'],
   governance: ['AI Control Tower', 'Trust · Explainability · Compliance · Audit'],
 }
 

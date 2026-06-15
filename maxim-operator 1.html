@@ -178,6 +178,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
 .stitle{font-size:15px;font-weight:700;}
 .ssub{font-size:11px;color:var(--muted);margin-top:2px;}
 .fr{display:flex;gap:6px;}
+.issue-filters{justify-content:flex-end;margin-bottom:12px;}
 .fbtn{border:1px solid var(--border);background:var(--surface);border-radius:6px;padding:5px 12px;
   font-size:11px;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;transition:all .1s;}
 .fbtn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
@@ -406,7 +407,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
         <div class="card">
           <div class="ch"><span class="ctitle">Event Feed</span></div>
           <div class="fi"><div class="fd r"></div><div><div class="ftxt">Bandwidth degradation — Midtown cluster</div><div class="ftm">09:41:22 · Network Agent</div></div></div>
-          <div class="fi"><div class="fd a"></div><div><div class="ftxt">Service-Alert sent · 1,240 users notified</div><div class="ftm">09:41:48 · CX Agent</div></div></div>
+          <div class="fi"><div class="fd a"></div><div><div class="ftxt">Service-Alert sent · 1,240 users notified</div><div class="ftm">09:41:48 · CareX</div></div></div>
           <div class="fi"><div class="fd g"></div><div><div class="ftxt">Queens cluster — all systems nominal</div><div class="ftm">09:38:10 · Monitoring</div></div></div>
           <div class="fi"><div class="fd g"></div><div><div class="ftxt">Promo credit applied — 890 users (Bronx)</div><div class="ftm">09:22:04 · Promotions Agent</div></div></div>
         </div>
@@ -415,9 +416,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
 
     <!-- ISSUES -->
     <div class="pv" id="page-issues">
-      <div class="sh"><div><div class="stitle">Active Issues</div><div class="ssub">3 open incidents across Manchester zones</div></div>
-        <div class="fr"><button class="fbtn on">All</button><button class="fbtn">High</button><button class="fbtn">Medium</button></div>
-      </div>
+      <div class="fr issue-filters"><button class="fbtn on">All</button><button class="fbtn">High</button><button class="fbtn">Medium</button></div>
       <div class="card tw">
         <table>
           <thead><tr><th>Incident</th><th>Zone</th><th>Type</th><th>Sev</th><th>Status</th><th>Agent</th><th>ETA</th></tr></thead>
@@ -510,7 +509,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
           <div class="tlbl">Agent Efficiency</div>
           <div class="blist">
             <div class="brow"><span class="blbl">Network Agent</span><div class="btrk"><div class="bfill g" style="width:96%"></div></div><span class="bpct">96%</span></div>
-            <div class="brow"><span class="blbl">CX Agent</span><div class="btrk"><div class="bfill g" style="width:92%"></div></div><span class="bpct">92%</span></div>
+            <div class="brow"><span class="blbl">CareX</span><div class="btrk"><div class="bfill g" style="width:92%"></div></div><span class="bpct">92%</span></div>
             <div class="brow"><span class="blbl">Promo Agent</span><div class="btrk"><div class="bfill" style="width:88%"></div></div><span class="bpct">88%</span></div>
           </div>
         </div>
@@ -536,7 +535,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
 
     <!-- REPORTS -->
     <div class="pv" id="page-reports">
-      <div class="sh"><div><div class="stitle">Reports</div><div class="ssub">Operational & performance summaries</div></div></div>
+      <div class="sh"><div><div class="stitle">Reports</div><div class="ssub">Operational & Performance summaries</div></div></div>
       <div class="rgrid">
         <div class="card rc"><div class="rico">📊</div><div class="rt">Daily Incident Summary</div><div class="rm">Today · 5 incidents logged</div></div>
         <div class="card rc"><div class="rico">🤖</div><div class="rt">Agent Activity</div><div class="rm">Today · 4 agents · 18 resolutions</div></div>
@@ -549,7 +548,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
 
     <!-- AI GOVERNANCE -->
     <div class="pv" id="page-governance">
-      <div class="sh"><div><div class="stitle">AI Control Tower</div><div class="ssub">Trust, explainability, compliance & audit for all autonomous AI actions</div></div></div>
+      
 
       <!-- KPI ROW -->
       <div class="gov-kpi-row">
@@ -603,11 +602,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
             </thead>
             <tbody>
               <tr>
-                <td>BW Rerouting</td><td>Network Agent</td><td>Any duration</td>
-                <td><span class="auth-badge auth-auto">● Autonomous</span></td>
-              </tr>
-              <tr>
-                <td>Service-Alert (Outage)</td><td>CX Agent</td><td>Any cohort size</td>
+                <td>Service-Alert (Outage)</td><td>CareX</td><td>Any cohort size</td>
                 <td><span class="auth-badge auth-auto">● Autonomous</span></td>
               </tr>
               <tr>
@@ -623,11 +618,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
                 <td><span class="auth-badge auth-human">⚠ Human Approval</span></td>
               </tr>
               <tr>
-                <td>Field Dispatch</td><td>Escalation Handler</td><td>Any</td>
-                <td><span class="auth-badge auth-block">✕ Blocked — Human Only</span></td>
-              </tr>
-              <tr>
-                <td>Mass Notification &gt;10k</td><td>CX Agent</td><td>&gt;10,000 users</td>
+                <td>Mass Notification &gt;10k</td><td>CareX</td><td>&gt;10,000 users</td>
                 <td><span class="auth-badge auth-block">✕ Blocked — Human Only</span></td>
               </tr>
             </tbody>
@@ -689,7 +680,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
                 <span class="xai-toggle" id="xt1">▼</span>
               </div>
               <div class="xai-body" id="x1">
-                <div class="xai-reason"><strong>Trigger:</strong> CX Agent passed cohort profile post-resolution · outage_duration: 14.5 min · avg_impact_score: 7.8</div>
+                <div class="xai-reason"><strong>Trigger:</strong> CareX passed cohort profile post-resolution · outage_duration: 14.5 min · avg_impact_score: 7.8</div>
                 <div class="xai-reason"><strong>Decision Logic:</strong> Segmentation Sub-Agent identified 1,240 eligible users · Offer Sub-Agent matched rule PROMO-STD-03: outage 10–20 min → 15GB add-on. Compensation within daily autonomous limit (₹42k of ₹100k).</div>
                 <div class="xai-reason"><strong>Outcome:</strong> 15GB add-on applied instantly · No billing anomaly · Churn risk score reduced by est. 12%</div>
                 <div class="xai-pills"><span class="xai-pill">Autonomous</span><span class="xai-pill">Policy: PROMO-STD-03</span><span class="xai-pill">Confidence: 91%</span><span class="xai-pill">Agent v1.9.0</span></div>
@@ -707,7 +698,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
               <div class="xai-body" id="x2">
                 <div class="xai-reason"><strong>Root Cause:</strong> Node failure — physical hardware fault suspected · RCA Sub-Agent confidence 62% below 90% threshold</div>
                 <div class="xai-reason"><strong>Decision Logic:</strong> Confidence below autonomous action threshold. Remediation Sub-Agent could not identify safe reroute. Policy ESC-01 triggered: escalate to human NOC if confidence &lt; 90% and physical fault suspected.</div>
-                <div class="xai-reason"><strong>Outcome:</strong> Ticket INC-2035 assigned to Raj Patel (NOC). CX Agent notified 2,100 users. Compensation pending human approval per policy COMP-HUM-01.</div>
+                <div class="xai-reason"><strong>Outcome:</strong> Ticket INC-2035 assigned to Raj Patel (NOC). CareX notified 2,100 users. Compensation pending human approval per policy COMP-HUM-01.</div>
                 <div class="xai-pills"><span class="xai-pill">Human-in-Loop</span><span class="xai-pill">Policy: ESC-01</span><span class="xai-pill">Confidence: 62%</span><span class="xai-pill">Agent v2.4.1</span></div>
               </div>
             </div>
@@ -756,13 +747,13 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
             </div>
             <div class="audit-row">
               <span class="audit-time">09:41:35</span>
-              <span class="audit-agent">Network Agent</span>
+              <span class="audit-agent">SOC Agent</span>
               <span class="audit-action">RCA sub-agents spawned for INC-2041</span>
               <span class="audit-type auto">Auto</span>
             </div>
             <div class="audit-row">
               <span class="audit-time">09:41:48</span>
-              <span class="audit-agent">CX Agent</span>
+              <span class="audit-agent">CareX</span>
               <span class="audit-action">Outage alert sent · 1,240 users · ETA 15 min</span>
               <span class="audit-type auto">Auto</span>
             </div>
@@ -814,7 +805,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
         <div class="sstep" id="s2">
           <div class="stl"><div class="stico">🔔</div><div class="stline"></div></div>
           <div class="stc"><div class="stag">Customer Experience Agent</div><div class="sdesc">Service-Alert dispatched to affected cohort</div>
-            <div class="flow" id="f2" style="display:none"><span class="fn">Network Agent</span><span class="arr">→</span><span class="fn g">CX Agent</span><span class="arr">→</span><span class="fn s">1,240 users</span></div>
+            <div class="flow" id="f2" style="display:none"><span class="fn">Network Agent</span><span class="arr">→</span><span class="fn g">CareX</span><span class="arr">→</span><span class="fn s">1,240 users</span></div>
             <div class="apill" id="a2" style="display:none">📱 Internet Outage — ETA 15 min</div>
           </div>
         </div>
@@ -853,7 +844,7 @@ td{padding:12px 16px;font-size:12px;border-top:1px solid var(--border);}
 
 <script>
 setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});},1000);
-const PM={dashboard:['Live Dashboard','Manchester · Real-time Multi-AI Monitoring'],issues:['Active Issues','3 open incidents across Manchester zones'],agents:['AI Agents','Multi-agent pipeline status'],escalations:['Escalations','Human-in-the-loop incidents'],reports:['Reports','Operational & performance summaries'],governance:['AI Control Tower','Trust · Explainability · Compliance · Audit']};
+const PM={dashboard:['Live Dashboard','Manchester · Real-time Multi-AI Monitoring'],issues:['Active Issues','3 open incidents across Manchester zones'],agents:['AI Agents','Multi-agent pipeline status'],escalations:['Escalations','Human-in-the-loop incidents'],reports:['Reports','Operational & Performance summaries'],governance:['AI Control Tower','Trust · Explainability · Compliance · Audit']};
 function goto(p,el){document.querySelectorAll('.pv').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');document.getElementById('pgt').textContent=PM[p][0];document.getElementById('pgs').textContent=PM[p][1];}
 function toggleXai(id){const b=document.getElementById(id);const t=document.getElementById('x'+id.slice(1).replace('x','')+'t');const isOpen=b.classList.contains('open');b.classList.toggle('open');const toggleEl=b.previousElementSibling.querySelector('.xai-toggle');if(toggleEl)toggleEl.textContent=isOpen?'▼':'▲';}
 function openSim(){resetSim();document.getElementById('ov').classList.add('open');}

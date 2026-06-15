@@ -11,8 +11,8 @@ const pageMeta = {
   agents: ['AI Agents', 'Multi-agent pipeline status'],
   escalations: ['Escalations', 'Human-in-the-loop incidents'],
   tower: ['AI Control Tower', 'System-wide intelligence overview'],
-  reports: ['Reports', 'Operational & performance summaries'],
-  governance: ['AI Control Tower', 'Trust · Explainability · Compliance · Audit'],
+  reports: ['Reports', 'Operational & Performance summaries'],
+  governance: ['AI Governance', 'Trust · Explainability · Compliance · Audit'],
 }
 
 const formatClock = () =>
@@ -23,10 +23,11 @@ const formatClock = () =>
   })
 
 const stepCount = 6
+const GREYSKIES_URL = 'https://greyskies-presentations.netlify.app/'
 
 const reportIssues = [
   {
-    id: '#INC-20234',
+    id: 'INC-20234',
     zone: 'Trafford',
     type: 'Service Degradation',
     severity: 'High',
@@ -45,7 +46,7 @@ const reportIssues = [
     throughputDrop: 15,
     rtt: 386,
     revenueAtRisk: 142000,
-    agent: 'Network + Nova',
+    agent: 'SOC + NOVA',
     recommendation: 'Add xe-0/0/1 to LAG bundle ae1 and keep goodwill outreach ready for affected subscribers.',
     segments: [
       ['Creator Boost', 1420, 28600],
@@ -208,6 +209,9 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   }, [])
 
   const goTo = (page) => setActivePage(page)
+  const openGreySkies = () => {
+    window.open(GREYSKIES_URL, '_blank', 'noopener,noreferrer')
+  }
   const activeIssueCount = inc20234Resolved ? 2 : 3
 
   const scrollSimulatorToStep = (index) => {
@@ -346,6 +350,11 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
       </svg>
     </div>
     <div className="app-tag">Multi-AI Network Ops</div>
+    <div className="powered-by">Powered by:</div>
+    <div className="powered-logos" aria-label="Powered by GreySkies and Circles">
+      <img src="/greyskies-powered-logo.png" alt="GreySkies" />
+      <img src="/circles-powered-logo.png" alt="Circles" />
+    </div>
   </div>
   <nav>
     <div className={navClass('dashboard')} onClick={() => goTo('dashboard')}>
@@ -356,7 +365,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
       <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
       Active Issues <span className="nbadge">{activeIssueCount}</span>
     </div>
-    <div className={navClass('greyskies')} onClick={() => goTo('greyskies')}>
+    <div className={navClass('greyskies')} onClick={openGreySkies}>
       <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd"/></svg>
       Grey Skies
     </div>
@@ -370,7 +379,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     </div>
     <div className={navClass('governance')} onClick={() => goTo('governance')}>
       <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-      AI Control Tower
+      AI Governance
     </div>
   </nav>
   <div className="sf">
@@ -424,8 +433,8 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <polygon points="292,118 348,100 408,112 412,162 386,196 338,200 292,178" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
               <polygon points="262,270 318,258 368,274 378,300 338,316 268,316 248,300" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
               <ellipse cx="110" cy="282" rx="58" ry="28" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              <circle cx="250" cy="140" r="18" fill="#E03A3A" opacity=".15"><animate attributeName="r" values="14;24;14" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".15;.04;.15" dur="2s" repeatCount="indefinite"/></circle>
-              <circle cx="250" cy="140" r="6" fill="#E03A3A"/>
+              {!inc20234Resolved && <circle cx="250" cy="140" r="18" fill="#E03A3A" opacity=".15"><animate attributeName="r" values="14;24;14" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".15;.04;.15" dur="2s" repeatCount="indefinite"/></circle>}
+              <circle cx="250" cy="140" r="6" fill={inc20234Resolved ? '#00A86B' : '#E03A3A'}/>
               <circle cx="306" cy="52" r="5" fill="#00A86B"/>
               <circle cx="352" cy="150" r="5" fill="#00A86B"/>
               <circle cx="296" cy="285" r="5" fill="#F59E0B"/>
@@ -433,7 +442,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <circle cx="250" cy="200" r="5" fill="#00A86B"/>
               <circle cx="232" cy="82" r="5" fill="#00A86B"/>
               <text x="232" y="126" fontSize="10" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Trafford</text>
-              <text x="237" y="137" fontSize="8" fill="#E03A3A" fontFamily="Inter,sans-serif">Issue Active</text>
+              {!inc20234Resolved && <text x="237" y="137" fontSize="8" fill="#E03A3A" fontFamily="Inter,sans-serif">Issue Active</text>}
               <text x="236" y="202" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Salford</text>
               <text x="288" y="46" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Stockport</text>
               <text x="336" y="154" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Oldham</text>
@@ -449,8 +458,8 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         </div>
         <div className="card">
           <div className="ch"><span className="ctitle">Event Feed</span></div>
-          <div className="fi"><div className="fd r"></div><div><div className="ftxt">Bandwidth degradation — Trafford cluster</div><div className="ftm">09:41:22 · Network Agent</div></div></div>
-          <div className="fi"><div className="fd a"></div><div><div className="ftxt">Service-Alert sent · 1,240 users notified</div><div className="ftm">09:41:48 · CX Agent</div></div></div>
+          <div className="fi"><div className="fd r"></div><div><div className="ftxt">Bandwidth degradation — Trafford cluster</div><div className="ftm">09:41:22 · SOC Agent</div></div></div>
+          <div className="fi"><div className="fd a"></div><div><div className="ftxt">Service-Alert sent · 1,240 users notified</div><div className="ftm">09:41:48 · CareX</div></div></div>
           <div className="fi"><div className="fd g"></div><div><div className="ftxt">Salford cluster — all systems nominal</div><div className="ftm">09:38:10 · Monitoring</div></div></div>
           <div className="fi"><div className="fd g"></div><div><div className="ftxt">Promo credit applied — 890 users (Bury)</div><div className="ftm">09:22:04 · Promotions Agent</div></div></div>
         </div>
@@ -459,12 +468,10 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* ISSUES */}
     <div className={pageClass('issues')} id="page-issues">
-      <div className="sh"><div><div className="stitle">Active Issues</div><div className="ssub">{activeIssueCount} open incidents across Manchester zones</div></div>
-        <div className="fr"><button className="fbtn on">All</button><button className="fbtn">High</button><button className="fbtn">Medium</button></div>
-      </div>
+      <div className="fr issue-filters"><button className="fbtn on">All</button><button className="fbtn">High</button><button className="fbtn">Medium</button></div>
       <div className="card tw">
         <table>
-          <thead><tr><th>Incident</th><th>Zone</th><th>Type</th><th>Sev</th><th>Status</th><th>Agent</th><th>OSS</th><th>BSS</th></tr></thead>
+          <thead><tr><th>Incident</th><th>Zone</th><th>Type</th><th>Sev</th><th>Status</th><th>Agent</th><th>GreySkies (OSS)</th><th>Circles (BSS)</th></tr></thead>
           <tbody>
             <tr>
               <td><strong>INC-20234</strong></td>
@@ -473,7 +480,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <td><span className="sev H">High</span></td>
               <td><span className={`pill ${inc20234Resolved ? 'rs' : 'ac'}`}>{inc20234Resolved ? '✓ Resolved' : '● Active'}</span></td>
               <td>network agent</td>
-              <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
+              <td><button className="oss-row-btn" onClick={openGreySkies} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
             </tr>
             <tr>
@@ -483,17 +490,17 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <td><span className="sev M">Med</span></td>
               <td><span className="pill ac">● Active</span></td>
               <td>Network Agent</td>
-              <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
+              <td><button className="oss-row-btn" onClick={openGreySkies} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
             </tr>
             <tr>
               <td><strong>INC-2035</strong></td>
               <td>Oldham</td>
               <td>Node Failure</td>
-              <td><span className="sev H">High</span></td>
+              <td><span className="sev L">Low</span></td>
               <td><span className="pill es">⚡ Escalated</span></td>
               <td>Human (NOC)</td>
-              <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
+              <td><button className="oss-row-btn" onClick={openGreySkies} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
             </tr>
             <tr>
@@ -503,7 +510,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <td><span className="sev L">Low</span></td>
               <td><span className="pill rs">✓ Resolved</span></td>
               <td>Network Agent</td>
-              <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
+              <td><button className="oss-row-btn" onClick={openGreySkies} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
             </tr>
             <tr>
@@ -513,7 +520,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <td><span className="sev M">Med</span></td>
               <td><span className="pill rs">✓ Resolved</span></td>
               <td>Network Agent</td>
-              <td><button className="oss-row-btn" onClick={() => goTo('greyskies')} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
+              <td><button className="oss-row-btn" onClick={openGreySkies} aria-label="GreySkies"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
               <td><button className="bss-row-btn" onClick={() => goTo('circles')} aria-label="Circles"><svg viewBox="0 0 16 16" fill="currentColor" width="11" height="11"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg></button></td>
             </tr>
           </tbody>
@@ -609,7 +616,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           <div className="tlbl">Agent Efficiency</div>
           <div className="blist">
             <div className="brow"><span className="blbl">Network Agent</span><div className="btrk"><div className="bfill g" style={{width: '96%'}}></div></div><span className="bpct">96%</span></div>
-            <div className="brow"><span className="blbl">CX Agent</span><div className="btrk"><div className="bfill g" style={{width: '92%'}}></div></div><span className="bpct">92%</span></div>
+            <div className="brow"><span className="blbl">CareX</span><div className="btrk"><div className="bfill g" style={{width: '92%'}}></div></div><span className="bpct">92%</span></div>
             <div className="brow"><span className="blbl">Promo Agent</span><div className="btrk"><div className="bfill" style={{width: '88%'}}></div></div><span className="bpct">88%</span></div>
           </div>
         </div>
@@ -635,7 +642,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* REPORTS */}
     <div className={pageClass('reports')} id="page-reports">
-      <div className="sh"><div><div className="stitle">Reports</div><div className="ssub">Aggregated OSS/BSS impact and issue-wise performance dashboard</div></div></div>
+      
       <div className="card report-issue-table">
         <div className="report-section-head">
           <div><strong>Issues</strong><span>Click an issue to update the report dashboard</span></div>
@@ -646,18 +653,21 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <tr><th>Incident</th><th>Zone</th><th>Type</th><th>Severity</th><th>Status</th><th>Users</th><th>Resolution</th><th>Comp Claims</th></tr>
           </thead>
           <tbody>
-            {reportIssues.map((issue) => (
-              <tr key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
-                <td><strong>{issue.id}</strong></td>
-                <td>{issue.zone}</td>
-                <td>{issue.type}</td>
-                <td><span className={`sev ${issue.severity === 'High' ? 'H' : issue.severity === 'Med' ? 'M' : 'L'}`}>{issue.severity}</span></td>
-                <td><span className={`pill ${issue.status === 'Resolved' ? 'rs' : issue.status === 'Escalated' ? 'es' : 'ac'}`}>{issue.status}</span></td>
-                <td>{issue.usersImpacted.toLocaleString()}</td>
-                <td>{issue.resolution}</td>
-                <td>{issue.usersCompClaimed.toLocaleString()}</td>
-              </tr>
-            ))}
+            {reportIssues.map((issue) => {
+              const reportStatus = issue.id === 'INC-20234' && inc20234Resolved ? 'Resolved' : issue.status
+              return (
+                <tr key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
+                  <td><strong>{issue.id}</strong></td>
+                  <td>{issue.zone}</td>
+                  <td>{issue.type}</td>
+                  <td><span className={`sev ${issue.severity === 'High' ? 'H' : issue.severity === 'Med' ? 'M' : 'L'}`}>{issue.severity}</span></td>
+                  <td><span className={`pill ${reportStatus === 'Resolved' ? 'rs' : reportStatus === 'Escalated' ? 'es' : 'ac'}`}>{reportStatus}</span></td>
+                  <td>{issue.usersImpacted.toLocaleString()}</td>
+                  <td>{issue.resolution}</td>
+                  <td>{issue.usersCompClaimed.toLocaleString()}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -740,7 +750,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* AI GOVERNANCE */}
     <div className={pageClass('governance')} id="page-governance">
-      <div className="sh"><div><div className="stitle">AI Control Tower</div><div className="ssub">Trust, explainability, compliance & audit for all autonomous AI actions</div></div></div>
+      
 
       {/* KPI ROW */}
       <div className="gov-kpi-row">
@@ -794,11 +804,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             </thead>
             <tbody>
               <tr>
-                <td>BW Rerouting</td><td>Network Agent</td><td>Any duration</td>
-                <td><span className="auth-badge auth-auto">● Autonomous</span></td>
-              </tr>
-              <tr>
-                <td>Service-Alert (Outage)</td><td>CX Agent</td><td>Any cohort size</td>
+                <td>Service-Alert (Outage)</td><td>CareX</td><td>Any cohort size</td>
                 <td><span className="auth-badge auth-auto">● Autonomous</span></td>
               </tr>
               <tr>
@@ -814,11 +820,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                 <td><span className="auth-badge auth-human">⚠ Human Approval</span></td>
               </tr>
               <tr>
-                <td>Field Dispatch</td><td>Escalation Handler</td><td>Any</td>
-                <td><span className="auth-badge auth-block">✕ Blocked — Human Only</span></td>
-              </tr>
-              <tr>
-                <td>Mass Notification &gt;10k</td><td>CX Agent</td><td>&gt;10,000 users</td>
+                <td>Mass Notification &gt;10k</td><td>CareX</td><td>&gt;10,000 users</td>
                 <td><span className="auth-badge auth-block">✕ Blocked — Human Only</span></td>
               </tr>
             </tbody>
@@ -887,13 +889,13 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:35</span>
-              <span className="audit-agent">Network Agent</span>
+              <span className="audit-agent">SOC Agent</span>
               <span className="audit-action">RCA sub-agents spawned for INC-2041</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:48</span>
-              <span className="audit-agent">CX Agent</span>
+              <span className="audit-agent">CareX</span>
               <span className="audit-action">Outage alert sent · 1,240 users · ETA 15 min</span>
               <span className="audit-type auto">Auto</span>
             </div>
@@ -945,7 +947,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         <div className={stepClass(2)} id="s2" ref={(node) => { simulatorStepRefs.current[2] = node }}>
           <div className="stl"><div className="stico">🔔</div><div className="stline"></div></div>
           <div className="stc"><div className="stag">Customer Experience Agent</div><div className="sdesc">Service-Alert dispatched to affected cohort</div>
-            <div className="flow" id="f2" style={flowStyle('f2')}><span className="fn">Network Agent</span><span className="arr">→</span><span className="fn g">CX Agent</span><span className="arr">→</span><span className="fn s">1,240 users</span></div>
+            <div className="flow" id="f2" style={flowStyle('f2')}><span className="fn">Network Agent</span><span className="arr">→</span><span className="fn g">CareX</span><span className="arr">→</span><span className="fn s">1,240 users</span></div>
             <div className="apill" id="a2" style={pillStyle('a2')}>📱 Internet Outage — ETA 15 min</div>
           </div>
         </div>
