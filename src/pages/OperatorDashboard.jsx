@@ -392,8 +392,10 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
 <div className="main">
   <div className="topbar">
-    <div>
-      <div className="tbtitle" id="pgt">{pageTitle}</div>
+    <div className={activePage === 'circles' ? 'tbbrand tbbrand-logo' : 'tbbrand'}>
+      <div className="tbtitle" id="pgt">
+        {activePage === 'circles' ? <img src="/circles-powered-logo.png" alt="Circles" /> : pageTitle}
+      </div>
       <div className="tbsub" id="pgs">{pageSubtitle}</div>
     </div>
     <div className="tbr">

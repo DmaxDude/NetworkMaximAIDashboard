@@ -183,7 +183,7 @@ export default function GreySkiesPage() {
               </svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div className="gs-msg-label">Co-pilot</div>
+              <div className="gs-msg-label">Analytics Co-pilot</div>
               <div className="gs-msg-bubble">
                 <p>Heads up, Adamâ€” something&apos;s off in the  Trafford ðŸš¨</p>
                 <p>ðŸš¨ <strong>Active alert â€” Network degradation detected</strong></p>
@@ -246,7 +246,7 @@ export default function GreySkiesPage() {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{BUSINESS_RESPONSE.intro}</p>
                     {BUSINESS_RESPONSE.lines.map((l, li) =>
@@ -276,7 +276,7 @@ export default function GreySkiesPage() {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble"><p>{m.text}</p></div>
                 </div>
               </div>

@@ -365,21 +365,21 @@ const SUGGESTIONS = [
 const PERSONAS = [
   {
     id: 'maya', name: 'Maya', role: 'CONTENT CREATOR',
-    desc: ' streams + uploads daily · on home Wi-Fi',
+    desc: ' Streams + Uploads Daily + 5G Data',
     hasCareX: true,
     signal: 'Wi-Fi',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18 3H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V9l-4-6zm-5 13H9v-2h4v2zm3-4H6v-2h10v2zm0-4H6V6h10v2z" /><path d="M18 9l4-3v12l-4-3V9z" /></svg>,
   },
   {
     id: 'raj', name: 'Raj', role: 'BUSINESS TRAVELLER',
-    desc: '80+ flights/yr · cell-only on a degraded site',
+    desc: '4-International Sites < 190 days | 5G Data Roaming Plans',
     hasCareX: true,
     signal: 'Cell · degraded',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0011.5 2 1.5 1.5 0 0010 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" /></svg>,
   },
   {
     id: 'elena', name: 'Elena', role: 'FAMILY PLANNER',
-    desc: ' 4-line family plan · no CareX app installed',
+    desc: ' 4-line family plan - No CareX App Installed',
     hasCareX: false,
     signal: 'Cell · degraded',
     icon: <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>,
@@ -583,8 +583,8 @@ export default function CirclesInline({ onResolveIncident }) {
               </svg>
             </div>
             <div>
-              <div className="gs-hdr-title">Nova — Operator Co-pilot</div>
-              <div className="gs-hdr-sub">Insights · Actions · Network ops</div>
+              <div className="gs-hdr-title">NOVA — Operator  Co-pilot</div>
+              <div className="gs-hdr-sub">Network Ops Insights · Actions · Offers</div>
             </div>
           </div>
           <div className="gs-inc-badge">
@@ -601,7 +601,7 @@ export default function CirclesInline({ onResolveIncident }) {
               </svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div className="gs-msg-label">Co-pilot</div>
+              <div className="gs-msg-label">Analytics Co-pilot</div>
               <div className="gs-msg-bubble">
                 <p>Heads up, Adam— something&apos;s off in Trafford 🚨</p>
                 <p>🚨 <strong>Active alert — Service degradation detected</strong></p>
@@ -661,7 +661,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{BUSINESS_RESPONSE.intro}</p>
                     {BUSINESS_RESPONSE.lines.map((l, li) =>
@@ -690,7 +690,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{RESTORE_RESPONSE.intro}</p>
                     {RESTORE_RESPONSE.lines.map((l, li) =>
@@ -719,7 +719,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{COMMS_RESPONSE.intro}</p>
                     {COMMS_RESPONSE.details.map((l, li) =>
@@ -774,7 +774,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p style={{fontStyle:'italic',color:'#374151'}}>{APPROVE_RESPONSE.intro}</p>
                     {APPROVE_RESPONSE.lines.map((l, li) =>
@@ -803,7 +803,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p style={{fontStyle:'italic',color:'#374151'}}>{RESTORED_ALERT.intro}</p>
                     {RESTORED_ALERT.lines.map((l, li) =>
@@ -822,7 +822,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{RESTORATION_COMMS_RESPONSE.intro}</p>
                     {RESTORATION_COMMS_RESPONSE.lines.map((l, li) => (
@@ -849,7 +849,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p dangerouslySetInnerHTML={{ __html: RESTORATION_DISPATCH_RESPONSE.intro }} />
                     {RESTORATION_DISPATCH_RESPONSE.lines.map((l, li) => (
@@ -876,7 +876,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>Nice &mdash; restoration comms are out. Now let&apos;s soften the bump &#127873;</p>
                     <p>Now that service is healthy, this is the right window to offer goodwill &mdash; sentiment listening is showing <strong>82% positive</strong>, and a tailored bundle here pays back in retention.</p>
@@ -893,7 +893,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     <p>{COMPENSATION_RESPONSE.intro}</p>
                     {COMPENSATION_RESPONSE.lines.map((l, li) => (
@@ -967,7 +967,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble gs-biz-bubble">
                     {COMPENSATION_ROLLOUT_RESPONSE.activation.map((l, li) => (
                       <p key={li} dangerouslySetInnerHTML={{ __html: l.html }} />
@@ -1048,7 +1048,7 @@ export default function CirclesInline({ onResolveIncident }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div className="gs-msg-label">Co-pilot</div>
+                  <div className="gs-msg-label">Analytics Co-pilot</div>
                   <div className="gs-msg-bubble"><p>{m.text}</p></div>
                 </div>
               </div>
