@@ -1,23 +1,6 @@
-import { useEffect, useState } from 'react'
 import '../styles/mobile.css'
 
-const formatClock = () => {
-  const now = new Date()
-  const hours = now.getHours()
-  const minutes = now.getMinutes()
-  const ampm = hours >= 12 ? 'PM' : 'AM'
-  const h12 = hours % 12 || 12
-      return `${h12}:${String(minutes).padStart(2, '0')} ${ampm}`
-}
-
 export default function MobileViewPage() {
-  const [clock, setClock] = useState(formatClock)
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setClock(formatClock()), 1000)
-    return () => window.clearInterval(timer)
-  }, [])
-
   return (
     <div className="mobile-page">
 <div className="phone">
@@ -26,7 +9,6 @@ export default function MobileViewPage() {
 
   {/* status bar */}
   <div className="statusbar">
-    <span className="sb-time" id="mob-clk">{clock}</span>
     <div className="sb-icons">
       <div className="sig">
         <div className="sig-bar" style={{height: '3px'}}></div>

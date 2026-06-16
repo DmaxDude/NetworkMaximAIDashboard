@@ -1,24 +1,6 @@
-import { useEffect, useState } from 'react'
 import '../styles/audit-trail.css'
 
-const formatClock = () => {
-  const now = new Date()
-  const hours = now.getHours()
-  const minutes = now.getMinutes()
-  const seconds = now.getSeconds()
-  const ampm = hours >= 12 ? 'PM' : 'AM'
-  const h12 = hours % 12 || 12
-      return `${h12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`
-}
-
 export default function AuditTrailPage() {
-  const [clock, setClock] = useState(formatClock)
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setClock(formatClock()), 1000)
-    return () => window.clearInterval(timer)
-  }, [])
-
   const openDefaultControlTower = () => {
     window.history.pushState({}, '', '/operator/governance')
     window.dispatchEvent(new PopStateEvent('popstate'))
@@ -67,7 +49,6 @@ export default function AuditTrailPage() {
         <div className="tb-sub">Trust · Explainability · Compliance · Audit</div>
       </div>
       <div className="tb-right">
-        <span className="clk" id="clk">{clock}</span>
         <button className="sim-btn"><span className="blink"></span>Simulate Issue</button>
       </div>
     </div>

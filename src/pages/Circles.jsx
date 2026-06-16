@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import '../styles/operator.css'
 
 /* â”€â”€ Agent icons â”€â”€ */
-const SOC_ICON = (
+const SOC_ICON = ( 
   <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
     <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"/>
   </svg>
@@ -187,7 +187,7 @@ export default function GreySkiesPage() {
               <div className="gs-msg-bubble">
                 <p>Heads up, Adamâ€” something&apos;s off in the  Trafford ðŸš¨</p>
                 <p>ðŸš¨ <strong>Active alert â€” Network degradation detected</strong></p>
-                <p><strong>Incident #INC-20234</strong> � Trafford Metro 5G RAN � severity <strong>P1</strong></p>
+                <p><strong>Incident #INC-20234</strong> � Trafford Metro 5G RAN � severity <strong>P1</strong></p>
                 <p><strong>Scope:</strong>Scope: 28 RAN 5G sites under the Trafford aggregation</p>
                 <p><strong>Symptom:</strong> 5G NR throughput down <strong>15%</strong> Â· Packet Loss <strong>7.22%</strong> (1.8 x baseline) Average RAN RTT 386 ms (1.6 x Baseline)</p>
                <p><strong>Likely cause:</strong>Backhaul capacity congestion. Confidence will firm as the signal develops.</p>

@@ -4,7 +4,7 @@ import GreySkiesInline from './GreySkiesInline.jsx'
 import CirclesInline from './CirclesInline.jsx'
 
 const pageMeta = {
-  dashboard: ['Live Dashboard', 'Manchester · Real-time Multi-AI Monitoring'],
+  dashboard: ['Live Dashboard', 'Greater Manchester · Real-time Multi-AI Monitoring'],
   issues: ['Active Issues', 'Incidents across Manchester zones'],
   greyskies: ['Grey Skies', 'OSS — Operations Support Systems'],
   circles: ['Circles', 'BSS — Business Support Systems'],
@@ -14,13 +14,6 @@ const pageMeta = {
   reports: ['Reports', 'Operational & Performance summaries'],
   governance: ['AI Governance', 'Trust · Explainability · Compliance · Audit'],
 }
-
-const formatClock = () =>
-  new Date().toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
 
 const stepCount = 6
 const GREYSKIES_URL = 'https://greyskies-presentations.netlify.app/'
@@ -175,7 +168,6 @@ const reportIssues = [
 
 export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [activePage, setActivePage] = useState(initialPage)
-  const [clock, setClock] = useState(formatClock)
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false)
   const [stepStates, setStepStates] = useState(Array(stepCount).fill(''))
   const [shownSimItems, setShownSimItems] = useState({})
@@ -193,11 +185,6 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     timers.current.forEach((timer) => window.clearTimeout(timer))
     timers.current = []
   }
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setClock(formatClock()), 1000)
-    return () => window.clearInterval(timer)
-  }, [])
 
   useEffect(() => {
     const t = window.setTimeout(() => setShowIncNotif(false), 6000)
@@ -314,8 +301,6 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     revenueAtRisk: total.revenueAtRisk + issue.revenueAtRisk,
   }), { usersImpacted: 0, sites: 0, compensationClaimed: 0, usersCompClaimed: 0, revenueAtRisk: 0 })
   const avgClaimRate = Math.round(reportIssues.reduce((sum, issue) => sum + issue.claimRate, 0) / reportIssues.length)
-  const avgOssHealth = Math.round(reportIssues.reduce((sum, issue) => sum + issue.ossHealth, 0) / reportIssues.length)
-  const avgBssHealth = Math.round(reportIssues.reduce((sum, issue) => sum + issue.bssHealth, 0) / reportIssues.length)
   const maxUsersImpacted = Math.max(...reportIssues.map((issue) => issue.usersImpacted))
 
   return (
@@ -350,40 +335,42 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
       </svg>
     </div>
     <div className="app-tag">Multi-AI Network Ops</div>
-    <div className="powered-by">Powered by:</div>
-    <div className="powered-logos" aria-label="Powered by GreySkies and Circles">
-      <img src="/powered-logo.svg" alt="GreySkies and Circles" />
-    </div>
   </div>
   <nav>
+    <div className="nav-section">Operations</div>
     <div className={navClass('dashboard')} onClick={() => goTo('dashboard')}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
       Live Dashboard
     </div>
     <div className={navClass('issues')} onClick={() => goTo('issues')}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M12 3 2 20h20z"></path><line x1="12" y1="10" x2="12" y2="14"></line><circle cx="12" cy="17" r=".6" fill="currentColor"></circle></svg>
       Active Issues <span className="nbadge">{activeIssueCount}</span>
     </div>
     <div className={navClass('greyskies')} onClick={openGreySkies}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"></path></svg>
       Grey Skies
     </div>
     <div className={navClass('circles')} onClick={() => goTo('circles')}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.4"></circle></svg>
       Circles
     </div>
+    <div className="nav-section intelligence">Intelligence</div>
     <div className={navClass('reports')} onClick={() => goTo('reports')}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><polyline points="14,3 14,8 19,8"></polyline></svg>
       Reports
     </div>
     <div className={navClass('governance')} onClick={() => goTo('governance')}>
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M12 3l8 3v6c0 4.4-3.2 7.6-8 9-4.8-1.4-8-4.6-8-9V6z"></path></svg>
       AI Governance
     </div>
   </nav>
   <div className="sf">
+    <div className="powered-by">Powered by :</div>
+    <div className="powered-logos" aria-label="Powered by GreySkies and Circles">
+      <img src="/powered-logo.png" alt="Powered by HCLTech, GreySkies and Circles" />
+    </div>
     <div className="user">
-      <div className="av">KS</div>
+      <div className="av">AS</div>
       <div><div className="uname">Adam Smith</div><div className="urole">Network Operator</div></div>
       <div className="odot"></div>
     </div>
@@ -399,13 +386,121 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
       <div className="tbsub" id="pgs">{pageSubtitle}</div>
     </div>
     <div className="tbr">
-      <span className="clk" id="clk">{clock}</span>
+      {activePage === 'dashboard' && <span className="live-chip"><span></span>LIVE</span>}
     </div>
   </div>
   <div className="content">
 
     {/* DASHBOARD */}
     <div className={pageClass('dashboard')} id="page-dashboard">
+      <div className="dashboard-v2">
+        <div className="dash-kpis">
+          <div className="card stat stat-green"><div className="slbl">Districts Monitored</div><div className="sval">10</div><div className="snote"><span className="mini-dot g"></span>Greater Manchester metro</div></div>
+          <div className="card stat stat-red"><div className="slbl">Active Issues</div><div className="sval">{activeIssueCount}</div><div className="snote alert">▲ 1 in the last hour</div></div>
+          <div className="card stat stat-green"><div className="slbl">Avg MTTR</div><div className="sval">4.2<span>min</span></div><div className="snote good">▼ 60% <em>vs baseline</em></div></div>
+          <div className="card stat stat-green"><div className="slbl">AI Resolution</div><div className="sval">94<span>%</span></div><div className="snote good">▲ <em>from 87% last week</em></div></div>
+        </div>
+        <div className="dash-grid">
+          <div className="card zone-map-card">
+            <div className="zone-head">
+              <div className="zone-title"><strong>Greater Manchester</strong> <span>— Network Zone Map</span></div>
+              <div className="zone-legend">
+                <span><i className="z-healthy"></i>Healthy</span>
+                <span><i className="z-degraded"></i>Degraded</span>
+                <span><i className="z-active"></i>Active issue</span>
+              </div>
+            </div>
+            <div className="mapb gm-map">
+              <svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Greater Manchester network zone map">
+                <defs>
+                  <pattern id="gmGrid" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M26 0H0V26" fill="none" stroke="#e8eef6" strokeWidth="1"/></pattern>
+                </defs>
+                <rect width="760" height="520" fill="#fbfdff"/>
+                <rect width="760" height="520" fill="url(#gmGrid)" opacity=".75"/>
+                <g className="gm-zone healthy">
+                  <polygon points="38,185 73,164 126,169 160,139 198,166 254,96 318,125 360,108 382,154 366,212 393,247 352,305 286,290 260,348 194,322 154,357 86,332 50,285 20,236"/>
+                  <text x="104" y="263">Wigan</text><circle cx="95" cy="258" r="4"/>
+                  <text x="214" y="181">Bolton</text><circle cx="205" cy="176" r="4"/>
+                  <text x="316" y="173">Bury</text><circle cx="307" cy="168" r="4"/>
+                </g>
+                <g className="gm-zone healthy">
+                  <polygon points="356,104 424,69 486,86 520,52 585,82 604,133 570,185 511,195 494,247 444,234 396,256 366,211 382,153"/>
+                  <text x="430" y="130">Rochdale</text><circle cx="421" cy="125" r="4"/>
+                </g>
+                <g className="gm-zone healthy has-tooltip">
+                  <polygon points="287,290 352,305 395,248 446,235 493,247 489,315 456,368 406,357 373,394 323,376 282,335"/>
+                  <text x="272" y="305">Salford</text><circle cx="263" cy="300" r="4"/>
+                  <text x="392" y="372">Manchester</text><circle cx="383" cy="367" r="4"/>
+                  <foreignObject x="208" y="292" width="230" height="122" className="map-tip salford-tip">
+                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop">
+                      <b><span></span>Salford</b><strong>Healthy</strong>
+                      <dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.6% uptime</dd></dl>
+                    </div>
+                  </foreignObject>
+                </g>
+                {!inc20234Resolved && (
+                  <g className="gm-zone active has-tooltip">
+                    <polygon points="282,335 323,376 373,394 407,357 457,368 492,420 458,476 396,487 344,459 292,477 246,435 225,388"/>
+                    <text x="312" y="426">Trafford</text><circle cx="302" cy="421" r="4"/>
+                    <foreignObject x="360" y="284" width="230" height="150" className="map-tip">
+                      <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop active-pop">
+                        <b><span></span>Trafford</b><strong>Active issue</strong>
+                        <dl><dt>Status</dt><dd>Service degradation</dd><dt>Incident</dt><dd>INC-20234</dd><dt>Users impacted</dt><dd>12,000</dd><dt>Detail</dt><dd>28 sites · 5G RAN</dd></dl>
+                      </div>
+                    </foreignObject>
+                  </g>
+                )}
+                {inc20234Resolved && (
+                  <g className="gm-zone healthy">
+                    <polygon points="282,335 323,376 373,394 407,357 457,368 492,420 458,476 396,487 344,459 292,477 246,435 225,388"/>
+                    <text x="312" y="426">Trafford</text><circle cx="302" cy="421" r="4"/>
+                  </g>
+                )}
+                <g className="gm-zone active"><polygon points="493,247 570,185 617,211 690,216 735,275 710,334 646,351 598,326 543,334 489,315"/><text x="585" y="279">Oldham</text><circle cx="576" cy="274" r="4"/></g>
+                <g className="gm-zone healthy"><polygon points="489,315 543,334 598,326 646,351 626,414 568,442 510,424 492,420 457,368"/><text x="552" y="361">Tameside</text><circle cx="543" cy="356" r="4"/></g>
+                <g className="gm-zone degraded has-tooltip">
+                  <polygon points="492,420 510,424 568,442 626,414 674,449 642,502 571,492 518,514 458,476"/>
+                  <text x="526" y="454">Stockport</text><circle cx="517" cy="449" r="4"/>
+                  <foreignObject x="270" y="312" width="230" height="150" className="map-tip">
+                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop degraded-pop">
+                      <b><span></span>Stockport</b><strong>Degraded</strong>
+                      <dl><dt>Status</dt><dd>Packet loss</dd><dt>Incident</dt><dd>INC-2039</dd><dt>Users impacted</dt><dd>6,400</dd><dt>Detail</dt><dd>Auto-mitigating</dd></dl>
+                    </div>
+                  </foreignObject>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div className="dash-side">
+            <div className="card event-card">
+              <div className="ch"><span className="ctitle">Event Feed</span></div>
+              <div className="fi"><div className="fd r"></div><div><div className="ftxt">Service degradation — Trafford cluster</div><div className="ftm">16:00:00 · SOC Agent</div></div></div>
+              <div className="fi"><div className="fd b"></div><div><div className="ftxt">Service-Alert dispatched · 1,240 users notified</div><div className="ftm">16:06:04 · CareX</div></div></div>
+              <div className="fi"><div className="fd r"></div><div><div className="ftxt">INC-2035 escalated to NOC — Oldham node failure</div><div className="ftm">16:02:30 · Escalation Handler</div></div></div>
+              <div className="fi"><div className="fd a"></div><div><div className="ftxt">Stockport packet loss — auto-mitigation in progress</div><div className="ftm">16:01:18 · Network Agent</div></div></div>
+              <div className="fi"><div className="fd g"></div><div><div className="ftxt">Bolton sector check — all systems nominal</div><div className="ftm">15:57:40 · Monitoring</div></div></div>
+              <div className="fi"><div className="fd g"></div><div><div className="ftxt">Promo credit applied — 890 users (Bury)</div><div className="ftm">15:46:02 · Promotions Agent</div></div></div>
+            </div>
+            <div className="card zone-status-card">
+              <div className="ch"><span className="ctitle">Zone Status</span></div>
+              {[
+                ['r', 'Oldham', 'Escalated'],
+                [inc20234Resolved ? 'g' : 'r', 'Trafford', inc20234Resolved ? 'Healthy' : 'Active issue'],
+                ['a', 'Stockport', 'Degraded'],
+                ['g', 'Bolton', 'Healthy'],
+                ['g', 'Bury', 'Healthy'],
+                ['g', 'Manchester', 'Healthy'],
+                ['g', 'Rochdale', 'Healthy'],
+                ['g', 'Salford', 'Healthy'],
+                ['g', 'Tameside', 'Healthy'],
+                ['g', 'Wigan', 'Healthy'],
+              ].map(([tone, zone, status]) => (
+                <div className="zone-status-row" key={zone}><span className={`fd ${tone}`}></span><strong>{zone}</strong><em>{status}</em></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="str">
         <div className="card stat"><div className="slbl">Zones Monitored</div><div className="sval cb">12</div><div className="snote">Manchester Metro</div></div>
         <div className="card stat"><div className="slbl">Active Issues</div><div className="sval cr">{activeIssueCount}</div><div className="snote">{inc20234Resolved ? 'INC-20234 resolved' : '↑ 1 in last hour'}</div></div>
@@ -459,7 +554,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         </div>
         <div className="card">
           <div className="ch"><span className="ctitle">Event Feed</span></div>
-          <div className="fi"><div className="fd r"></div><div><div className="ftxt">Bandwidth degradation — Trafford cluster</div><div className="ftm">09:41:22 · SOC Agent</div></div></div>
+          <div className="fi"><div className="fd r"></div><div><div className="ftxt">Service degradation — Trafford cluster</div><div className="ftm">09:41:22 · SOC Agent</div></div></div>
           <div className="fi"><div className="fd a"></div><div><div className="ftxt">Service-Alert sent · 1,240 users notified</div><div className="ftm">09:41:48 · CareX</div></div></div>
           <div className="fi"><div className="fd g"></div><div><div className="ftxt">Salford cluster — all systems nominal</div><div className="ftm">09:38:10 · Monitoring</div></div></div>
           <div className="fi"><div className="fd g"></div><div><div className="ftxt">Promo credit applied — 890 users (Bury)</div><div className="ftm">09:22:04 · Promotions Agent</div></div></div>
@@ -682,7 +777,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
       <div className="report-dashboard-grid">
         <div className="card report-panel report-focus">
-          <div className="report-section-head"><div><strong>{selectedReportIssue.id} - {selectedReportIssue.zone}</strong><span>{selectedReportIssue.type} / {selectedReportIssue.agent}</span></div><b>{selectedReportIssue.status}</b></div>
+          <div className="report-section-head"><div><strong>{selectedReportIssue.id} - {selectedReportIssue.zone}</strong><span>{selectedReportIssue.type} / {selectedReportIssue.agent}</span></div></div>
           <div className="report-focus-body">
             <div className="report-focus-metric"><span>Users impacted</span><strong>{selectedReportIssue.usersImpacted.toLocaleString()}</strong></div>
             <div className="report-focus-metric"><span>Resolution time</span><strong>{selectedReportIssue.resolution}</strong></div>
@@ -723,29 +818,23 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           <div className="report-legend"><span><i></i> impacted users</span><span><i></i> compensation claimers</span></div>
         </div>
 
-        <div className="card report-panel">
-          <div className="report-section-head"><div><strong>Incident Pressure Curve</strong><span>Issue severity shape from detection to recovery</span></div></div>
-          <svg className="report-line-chart" viewBox="0 0 320 150" preserveAspectRatio="none">
-            <polyline points={selectedReportIssue.trend.map((value, index) => `${index * 64},${145 - value}`).join(' ')} />
-            {selectedReportIssue.trend.map((value, index) => <circle key={`${value}-${index}`} cx={index * 64} cy={145 - value} r="4" />)}
-          </svg>
-        </div>
+        <div className="report-pair">
+          <div className="card report-panel">
+            <div className="report-section-head"><div><strong>Incident Pressure Curve</strong><span>Issue severity shape from detection to recovery</span></div></div>
+            <svg className="report-line-chart" viewBox="0 0 320 150" preserveAspectRatio="none">
+              <polyline points={selectedReportIssue.trend.map((value, index) => `${index * 64},${145 - value}`).join(' ')} />
+              {selectedReportIssue.trend.map((value, index) => <circle key={`${value}-${index}`} cx={index * 64} cy={145 - value} r="4" />)}
+            </svg>
+          </div>
 
-        <div className="card report-panel">
-          <div className="report-section-head"><div><strong>Compensation Mix</strong><span>Claims and spend by BSS segment</span></div></div>
-          <div className="report-segments">
-            {selectedReportIssue.segments.map(([name, users, spend]) => <div key={name}><span>{name}</span><strong>{users.toLocaleString()} users</strong><b>${Math.round(spend / 1000)}K</b></div>)}
+          <div className="card report-panel">
+            <div className="report-section-head"><div><strong>Compensation Mix</strong><span>Claims and spend by BSS segment</span></div></div>
+            <div className="report-segments">
+              {selectedReportIssue.segments.map(([name, users, spend]) => <div key={name}><span>{name}</span><strong>{users.toLocaleString()} users</strong><b>${Math.round(spend / 1000)}K</b></div>)}
+            </div>
           </div>
         </div>
 
-        <div className="card report-panel report-wide">
-          <div className="report-section-head"><div><strong>OSS/BSS Aggregate Score</strong><span>Combined operational readiness across all report issues</span></div></div>
-          <div className="report-score-grid">
-            <div><span>OSS average health</span><strong>{avgOssHealth}%</strong><i><b style={{width: `${avgOssHealth}%`}}></b></i></div>
-            <div><span>BSS average readiness</span><strong>{avgBssHealth}%</strong><i><b style={{width: `${avgBssHealth}%`}}></b></i></div>
-            <div><span>Compensation uptake</span><strong>{avgClaimRate}%</strong><i><b style={{width: `${avgClaimRate}%`}}></b></i></div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -763,33 +852,33 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                 <svg width="52" height="52" viewBox="0 0 52 52">
                   <circle cx="26" cy="26" r="22" fill="none" stroke="#E4E9F2" strokeWidth="4"/>
                   <circle cx="26" cy="26" r="22" fill="none" stroke="#00A86B" strokeWidth="4"
-                    strokeDasharray="138 138" strokeDashoffset="10" strokeLinecap="round"/>
+                    strokeDasharray="138 138" strokeDashoffset="6" strokeLinecap="round"/>
                 </svg>
-                <div className="gscore-ring-num">94</div>
+                <div className="gscore-ring-num">96</div>
               </div>
             </div>
           </div>
-          <div className="gov-kpi-val cg">94<span style={{fontSize: '14px'}}>/100</span></div>
+          <div className="gov-kpi-val cg">96<span style={{fontSize: '14px'}}>/100</span></div>
           <div className="gov-kpi-lbl">Governance Score</div>
-          <div className="gov-kpi-sub">↑ 3pts from last week</div>
+          <div className="gov-kpi-sub">INC-20234 cleared active checks</div>
         </div>
         <div className="card gov-kpi">
           <div className="gov-kpi-top"><div className="gov-kpi-ico">📋</div></div>
-          <div className="gov-kpi-val cb">18</div>
+          <div className="gov-kpi-val cb">6</div>
           <div className="gov-kpi-lbl">Policies Active</div>
-          <div className="gov-kpi-sub">All guardrails enforced</div>
+          <div className="gov-kpi-sub">Incident Comp Policy v3.2 enforced</div>
         </div>
         <div className="card gov-kpi">
           <div className="gov-kpi-top"><div className="gov-kpi-ico">⚡</div></div>
-          <div className="gov-kpi-val">47<span style={{fontSize: '13px', color: 'var(--muted)'}}> / 50</span></div>
+          <div className="gov-kpi-val">9<span style={{fontSize: '13px', color: 'var(--muted)'}}> / 9</span></div>
           <div className="gov-kpi-lbl">Decisions Today</div>
-          <div className="gov-kpi-sub">47 autonomous · 3 human-approved</div>
+          <div className="gov-kpi-sub">Demo workflow gates completed</div>
         </div>
         <div className="card gov-kpi">
           <div className="gov-kpi-top"><div className="gov-kpi-ico">🚩</div></div>
-          <div className="gov-kpi-val ca">2</div>
+          <div className="gov-kpi-val ca">1</div>
           <div className="gov-kpi-lbl">Flags Raised</div>
-          <div className="gov-kpi-sub">1 blocked · 1 human-reviewed</div>
+          <div className="gov-kpi-sub">NORS watch at 612K user-min</div>
         </div>
       </div>
 
@@ -805,24 +894,24 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             </thead>
             <tbody>
               <tr>
-                <td>Service-Alert (Outage)</td><td>CareX</td><td>Any cohort size</td>
+                <td>Service-Alert (Degradation)</td><td>Notification Agent</td><td>12,000 subs · TCPA service message</td>
                 <td><span className="auth-badge auth-auto">● Autonomous</span></td>
               </tr>
               <tr>
-                <td>Data Add-on ≤ 15GB</td><td>Promotions Agent</td><td>Per incident</td>
+                <td>RAN RCA + LAG remediation</td><td>SOC Agent</td><td>28 5G RAN sites · KPI validation</td>
                 <td><span className="auth-badge auth-auto">● Autonomous</span></td>
               </tr>
               <tr>
-                <td>Data Add-on &gt; 15GB</td><td>Promotions Agent</td><td>Per incident</td>
-                <td><span className="auth-badge auth-human">⚠ Human Approval</span></td>
+                <td>Multi-channel all-clear</td><td>Notification Agent</td><td>12,000 consumers + 47 enterprise</td>
+                <td><span className="auth-badge auth-human">⚠ Operator Approved</span></td>
               </tr>
               <tr>
-                <td>Credit / Refund</td><td>Promotions Agent</td><td>Any value</td>
-                <td><span className="auth-badge auth-human">⚠ Human Approval</span></td>
+                <td>Per-segment compensation</td><td>Promotion Agent</td><td>$3.56M envelope · under $4M cap</td>
+                <td><span className="auth-badge auth-auto">● Policy Auto-approved</span></td>
               </tr>
               <tr>
-                <td>Mass Notification &gt;10k</td><td>CareX</td><td>&gt;10,000 users</td>
-                <td><span className="auth-badge auth-block">✕ Blocked — Human Only</span></td>
+                <td>FCC NORS escalation</td><td>Analytics Agent</td><td>75% of 900K user-min threshold</td>
+                <td><span className="auth-badge auth-human">⚠ Watch</span></td>
               </tr>
             </tbody>
           </table>
@@ -832,20 +921,20 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         <div className="card gov-card">
           <div className="gov-card-title"><span>💰</span> Compensation Guardrails</div>
           <div className="comp-meter">
-            <div className="comp-meter-head"><span className="comp-meter-lbl">Daily Compensation Budget</span><span className="comp-meter-val">₹42k / ₹100k</span></div>
-            <div className="comp-track"><div className="comp-fill safe" style={{width: '42%'}}></div></div>
+            <div className="comp-meter-head"><span className="comp-meter-lbl">Projected Compensation Envelope</span><span className="comp-meter-val">$3.56M / $4M</span></div>
+            <div className="comp-track"><div className="comp-fill warn" style={{width: '89%'}}></div></div>
           </div>
           <div className="comp-meter">
-            <div className="comp-meter-head"><span className="comp-meter-lbl">Monthly Spend</span><span className="comp-meter-val">₹3.8L / ₹5L</span></div>
-            <div className="comp-track"><div className="comp-fill warn" style={{width: '76%'}}></div></div>
+            <div className="comp-meter-head"><span className="comp-meter-lbl">Expected Redemptions</span><span className="comp-meter-val">98,436 / 136,308</span></div>
+            <div className="comp-track"><div className="comp-fill safe" style={{width: '72%'}}></div></div>
           </div>
           <div className="comp-meter">
-            <div className="comp-meter-head"><span className="comp-meter-lbl">Avg Compensation / User</span><span className="comp-meter-val">15GB · within policy</span></div>
-            <div className="comp-track"><div className="comp-fill safe" style={{width: '55%'}}></div></div>
+            <div className="comp-meter-head"><span className="comp-meter-lbl">Weighted Bundle Uptake</span><span className="comp-meter-val">72% · 3 segments</span></div>
+            <div className="comp-track"><div className="comp-fill safe" style={{width: '72%'}}></div></div>
           </div>
           <div className="comp-flags">
-            <div className="comp-flag ok"><span className="comp-flag-ico">✅</span><span>INC-2041 — 15GB add-on for 1,240 users · Rule matched: &lt;15 min outage → standard compensation · Auto-approved</span></div>
-            <div className="comp-flag warn"><span className="comp-flag-ico">⚠️</span><span>INC-2035 — Compensation pending human review · Node failure &gt;30 min · exceeds autonomous threshold</span></div>
+            <div className="comp-flag ok"><span className="comp-flag-ico">✅</span><span>INC-20234 — Creator Boost, Roam & Recover, and Family Care approved · within Incident Comp Policy v3.2</span></div>
+            <div className="comp-flag ok"><span className="comp-flag-ico">✅</span><span>Projected spend $3.56M · 98,436 expected redemptions · redemption tracking live after CareX/SMS publish</span></div>
           </div>
         </div>
       </div>
@@ -858,22 +947,22 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           <div className="gov-card-title"><span>📋</span> Policy Compliance Status</div>
           <div className="policy-list">
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">NET-AUTO-01 · Autonomous rerouting under 5 min outage</div><div className="policy-status g">Compliant</div>
+              <div className="policy-dot g"></div><div className="policy-name">NET-AUTO-01 · Self-healing LAG config push validated across 28 RAN sites</div><div className="policy-status g">Compliant</div>
             </div>
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">PROMO-STD-03 · 15GB add-on for 10–20 min outage</div><div className="policy-status g">Compliant</div>
+              <div className="policy-dot g"></div><div className="policy-name">RCA-LAG-01 · BDN-PE01 xe-0/0/1 added to ae1 and LACP confirmed</div><div className="policy-status g">Compliant</div>
             </div>
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">CX-NOTIF-01 · Alert within 2 min of detection</div><div className="policy-status g">Compliant</div>
+              <div className="policy-dot g"></div><div className="policy-name">CX-NOTIF-01 · Outage and all-clear sent by SMS, push, and in-app</div><div className="policy-status g">Compliant</div>
             </div>
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot a"></div><div className="policy-name">COMP-HUM-01 · Human approval for &gt;15GB compensation</div><div className="policy-status a">Pending Review</div>
+              <div className="policy-dot g"></div><div className="policy-name">TCPA-STOP-01 · Service-message exemption applied and 38 STOP opt-outs suppressed</div><div className="policy-status g">Compliant</div>
             </div>
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">ESC-01 · Escalate if agent confidence &lt; 90%</div><div className="policy-status g">Compliant</div>
+              <div className="policy-dot g"></div><div className="policy-name">COMP-POLICY-3.2 · $3.56M compensation package within $4M cap</div><div className="policy-status g">Compliant</div>
             </div>
             <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">GOV-AUDIT-01 · All actions logged immutably</div><div className="policy-status g">Compliant</div>
+              <div className="policy-dot a"></div><div className="policy-name">REG-NORS-01 · FCC NORS exposure monitored at 612K user-minutes</div><div className="policy-status a">Watch</div>
             </div>
           </div>
         </div>
@@ -885,38 +974,38 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <div className="audit-row">
               <span className="audit-time">09:41:22</span>
               <span className="audit-agent">Monitoring System</span>
-              <span className="audit-action">QoE anomaly detected — Midtown · BW 18%</span>
+              <span className="audit-action">INC-20234 detected — Trafford Metro 5G RAN · 28 sites · ~12,000 subs</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:35</span>
-              <span className="audit-agent">SOC Agent</span>
-              <span className="audit-action">RCA sub-agents spawned for INC-2041</span>
+              <span className="audit-agent">Analytics Agent</span>
+              <span className="audit-action">Business impact sized · $501K revenue at risk · 47 enterprise SLA accounts · NORS 612K</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:48</span>
-              <span className="audit-agent">CareX</span>
-              <span className="audit-action">Outage alert sent · 1,240 users · ETA 15 min</span>
+              <span className="audit-agent">Notification Agent</span>
+              <span className="audit-action">Outage comms sent · 12,000 SMS · 99.2% delivery · 38 STOP opt-outs</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:43:10</span>
-              <span className="audit-agent">Remediation Sub-Agent</span>
-              <span className="audit-action">Alternate route activated MH-7→MH-12→MH-9</span>
+              <span className="audit-agent">SOC Agent</span>
+              <span className="audit-action">LAG fix pushed · BDN-PE01 xe-0/0/1 → ae1 · traffic balancing ~50/50</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:46:02</span>
-              <span className="audit-agent">Promotions Agent</span>
-              <span className="audit-action">15GB add-on credited · 1,240 users · Policy PROMO-STD-03</span>
+              <span className="audit-agent">Notification Agent</span>
+              <span className="audit-action">All-clear sent · 12,000 consumers + 47 enterprise contacts · 99.1% SMS delivery</span>
               <span className="audit-type auto">Auto</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:18:04</span>
-              <span className="audit-agent">Escalation Handler</span>
-              <span className="audit-action">INC-2035 escalated to Raj Patel — confidence 62%</span>
-              <span className="audit-type human">Human</span>
+              <span className="audit-time">09:48:20</span>
+              <span className="audit-agent">Promotion Agent</span>
+              <span className="audit-action">Bundles published · $3.56M envelope · 98,436 expected redemptions · Policy v3.2</span>
+              <span className="audit-type auto">Auto</span>
             </div>
           </div>
           <button className="export-btn" type="button">Download Audit Report</button>
