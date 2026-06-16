@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import '../styles/operator.css'
+import { GM_GEO } from '../data/gmGeo.js'
 import GreySkiesInline from './GreySkiesInline.jsx'
 import CirclesInline from './CirclesInline.jsx'
 
@@ -17,6 +18,58 @@ const pageMeta = {
 
 const stepCount = 6
 const GREYSKIES_URL = 'https://greyskies-presentations.netlify.app/'
+
+const GM_MAP_WIDTH = 1000
+const GM_MAP_HEIGHT = 747
+const GM_TOOLTIP_WIDTH = 248
+const GM_TOOLTIP_HEIGHT = 176
+const GM_STATUS_COLOR = {
+  good: '#32cfaa',
+  warn: '#f8b333',
+  bad: '#ff5b6f',
+}
+
+const GM_ZONE_STATUS = {
+  Trafford: {
+    status: 'bad',
+    label: 'Active issue',
+    note: 'Service Degradation',
+    inc: 'INC-20234',
+    users: '12,000',
+    severity: 'High',
+    detail: 'Trafford Metro 5G RAN \u00b7 28 sites',
+  },
+  Oldham: {
+    status: 'bad',
+    label: 'Escalated',
+    note: 'Node failure',
+    inc: 'INC-2035',
+    users: '9,800',
+    severity: 'High',
+    detail: 'Human-in-loop',
+  },
+  Stockport: {
+    status: 'warn',
+    label: 'Degraded',
+    note: 'Packet loss',
+    inc: 'INC-2039',
+    users: '6,400',
+    severity: 'Med',
+    detail: 'Auto-mitigating',
+  },
+  Manchester: { status: 'good', label: 'Healthy', note: 'All systems nominal', detail: '99.4% uptime' },
+  Salford: { status: 'good', label: 'Healthy', note: 'All systems nominal', detail: '99.6% uptime' },
+  Bury: { status: 'good', label: 'Healthy', note: 'Recently resolved', inc: 'INC-2030', detail: 'Resolved 24m' },
+  Bolton: { status: 'good', label: 'Healthy', note: 'Recently resolved', inc: 'INC-2028', detail: 'Resolved 31m' },
+  Rochdale: { status: 'good', label: 'Healthy', note: 'All systems nominal', detail: '99.1% uptime' },
+  Tameside: { status: 'good', label: 'Healthy', note: 'All systems nominal', detail: '99.3% uptime' },
+  Wigan: { status: 'good', label: 'Healthy', note: 'All systems nominal', detail: '99.5% uptime' },
+}
+
+const getGmTooltipPosition = ([x, y]) => ({
+  x: Math.min(Math.max(x + 18, 14), GM_MAP_WIDTH - GM_TOOLTIP_WIDTH - 14),
+  y: Math.min(Math.max(y - 98, 14), GM_MAP_HEIGHT - GM_TOOLTIP_HEIGHT - 14),
+})
 
 const reportIssues = [
   {
@@ -410,203 +463,76 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                 <span><i className="z-active"></i>Active issue</span>
               </div>
             </div>
-            <div className="mapb gm-map">
-              <svg className="gm-stylized-map" viewBox="0 0 940 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Greater Manchester network zone map">
-                <rect width="940" height="400" fill="#dbe8f5" />
-                <rect x="190" y="0" width="560" height="400" fill="#cfe0f2" opacity=".86" />
-                <rect x="190" y="0" width="38" height="400" fill="#bed2e8" opacity=".68" />
-                <rect x="0" y="330" width="940" height="70" fill="#c4d8ee" opacity=".58" />
-                <ellipse cx="680" cy="200" rx="56" ry="175" fill="#b7cbe5" opacity=".58" />
-                <rect x="0" y="0" width="940" height="400" fill="none" stroke="#9db7d6" strokeWidth="1" />
-
-                <g className="gm-map-legend-card">
-                  <rect x="22" y="18" width="138" height="70" rx="8" fill="#fff" opacity=".92" />
-                  <circle cx="37" cy="36" r="5" fill="#ef4444" /><text x="50" y="40">Active Issue</text>
-                  <circle cx="37" cy="54" r="5" fill="#f59e0b" /><text x="50" y="58">Degraded</text>
-                  <circle cx="37" cy="72" r="5" fill="#00a86b" /><text x="50" y="76">Healthy</text>
-                </g>
-
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M42 210 70 160 112 170 148 150 178 178 192 226 162 270 106 280 70 250 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M170 150 222 116 273 150 260 210 211 235 174 205 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M300 62 346 82 351 176 323 243 290 254 274 210 286 118 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M348 60 430 45 500 58 505 118 450 128 390 120 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M236 235 288 220 340 238 320 305 250 306 220 270 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M344 235 400 220 455 244 478 292 420 330 350 314 320 276 Z" /></g>
-                {!inc20234Resolved ? (
-                  <g className="gm-zone active"><path className="gm-zone-shape" d="M210 286 258 318 320 315 350 360 314 388 248 376 206 346 168 360 135 332 168 306 Z" /></g>
-                ) : (
-                  <g className="gm-zone healthy"><path className="gm-zone-shape" d="M210 286 258 318 320 315 350 360 314 388 248 376 206 346 168 360 135 332 168 306 Z" /></g>
-                )}
-                <g className="gm-zone degraded"><path className="gm-zone-shape" d="M452 304 530 286 605 326 676 318 720 360 690 382 585 386 520 370 440 384 428 342 Z" /></g>
-                <g className="gm-zone active"><path className="gm-zone-shape" d="M580 150 645 138 718 152 778 146 820 185 832 248 802 292 735 282 680 300 620 270 600 220 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M575 252 626 286 680 300 735 282 802 292 790 350 720 360 660 342 590 356 552 310 Z" /></g>
-
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="112" cy="224" r="5" /><text x="124" y="228">Wigan</text>
-                  <foreignObject x="126" y="155" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Wigan</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.7% uptime</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="220" cy="170" r="5" /><text x="232" y="174">Bolton</text>
-                  <foreignObject x="242" y="98" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Bolton</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.8% uptime</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="320" cy="154" r="5" /><text x="332" y="158">Bury</text>
-                  <foreignObject x="338" y="84" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Bury</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.5% uptime</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="440" cy="68" r="5" /><text x="452" y="72">Rochdale</text>
-                  <foreignObject x="466" y="28" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Rochdale</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.4% uptime</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="282" cy="268" r="5" /><text x="294" y="272">Salford</text>
-                  <foreignObject x="304" y="190" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Salford</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.6% uptime</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="405" cy="264" r="5" /><text x="417" y="268">Manchester</text>
-                  <foreignObject x="432" y="186" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Manchester</b><strong>Healthy</strong><dl><dt>Status</dt><dd>Metro core stable</dd><dt>Detail</dt><dd>All systems nominal</dd></dl></div></foreignObject>
-                </g>
-                <g className={`gm-map-label has-tooltip ${inc20234Resolved ? 'healthy' : 'active'}`} tabIndex="0">
-                  {!inc20234Resolved && <circle className="gm-pulse-ring" cx="244" cy="338" r="18" />}
-                  <circle className="gm-location-dot" cx="244" cy="338" r="5" /><text x="256" y="342">Trafford</text>
-                  <foreignObject x="262" y="250" width="244" height="158" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className={`map-pop ${inc20234Resolved ? 'healthy-pop' : 'active-pop'}`}><b><span></span>Trafford</b><strong>{inc20234Resolved ? 'Healthy' : 'Active issue'}</strong><dl><dt>Status</dt><dd>{inc20234Resolved ? 'All systems nominal' : 'Service degradation'}</dd><dt>Incident</dt><dd>INC-20234</dd><dt>Users impacted</dt><dd>{inc20234Resolved ? '0' : '12,000'}</dd><dt>Detail</dt><dd>{inc20234Resolved ? 'Restored' : <>28 sites &middot; 5G RAN</>}</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip degraded" tabIndex="0">
-                  <circle className="gm-location-dot" cx="562" cy="350" r="5" /><text x="574" y="354">Stockport</text>
-                  <foreignObject x="590" y="248" width="244" height="158" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop degraded-pop"><b><span></span>Stockport</b><strong>Degraded</strong><dl><dt>Status</dt><dd>Packet loss</dd><dt>Incident</dt><dd>INC-2039</dd><dt>Users impacted</dt><dd>6,400</dd><dt>Detail</dt><dd>Auto-mitigating</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip active" tabIndex="0">
-                  <circle className="gm-pulse-ring" cx="692" cy="214" r="18" />
-                  <circle className="gm-location-dot" cx="692" cy="214" r="5" /><text x="704" y="218">Oldham</text>
-                  <foreignObject x="710" y="126" width="244" height="158" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop active-pop"><b><span></span>Oldham</b><strong>Active issue</strong><dl><dt>Status</dt><dd>Node failure</dd><dt>Incident</dt><dd>INC-2035</dd><dt>Users impacted</dt><dd>9,800</dd><dt>Detail</dt><dd>Human NOC engaged</dd></dl></div></foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="670" cy="298" r="5" /><text x="682" y="302">Tameside</text>
-                  <foreignObject x="690" y="218" width="230" height="126" className="map-tip"><div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Tameside</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.5% uptime</dd></dl></div></foreignObject>
-                </g>
-              </svg>
-              <svg viewBox="0 0 1080 790" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Greater Manchester network zone map">
+            <div className="mapb gm-map" aria-label="Greater Manchester network zone map">
+              <svg className="gm-live-map" viewBox={GM_GEO.viewBox} preserveAspectRatio="xMidYMid meet" role="img">
                 <defs>
-                  <linearGradient id="gmMapBg" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#fbfdff" />
-                    <stop offset="100%" stopColor="#f7fbff" />
+                  <linearGradient id="gmLiveGood" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="rgba(45,212,167,0.32)" />
+                    <stop offset="1" stopColor="rgba(45,212,167,0.10)" />
                   </linearGradient>
-                  <pattern id="gmGrid" width="36" height="36" patternUnits="userSpaceOnUse">
-                    <path d="M36 0H0V36" fill="none" stroke="#e8eef6" strokeWidth="1" />
+                  <linearGradient id="gmLiveWarn" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="rgba(246,181,60,0.40)" />
+                    <stop offset="1" stopColor="rgba(246,181,60,0.12)" />
+                  </linearGradient>
+                  <linearGradient id="gmLiveBad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="rgba(255,93,108,0.52)" />
+                    <stop offset="1" stopColor="rgba(255,93,108,0.16)" />
+                  </linearGradient>
+                  <radialGradient id="gmLiveStageGlow" cx="50%" cy="42%" r="62%">
+                    <stop offset="0" stopColor="rgba(33,182,218,0.10)" />
+                    <stop offset="1" stopColor="rgba(33,182,218,0)" />
+                  </radialGradient>
+                  <filter id="gmLiveGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <pattern id="gmLiveGrid" width="34" height="34" patternUnits="userSpaceOnUse">
+                    <path className="gm-live-grid-line" d="M34 0H0V34" fill="none" strokeWidth="1" />
                   </pattern>
                 </defs>
-                <rect width="1080" height="790" fill="url(#gmMapBg)" />
-                <rect width="1080" height="790" fill="url(#gmGrid)" opacity=".74" />
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M48 209 82 205 94 211 128 202 148 204 151 238 170 238 186 260 205 272 238 288 229 326 259 357 241 389 248 452 209 457 182 493 189 508 177 523 131 513 118 495 78 488 61 457 29 432 47 385 36 355 55 303 44 279 Z" />
-                </g>
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M170 238 186 206 212 190 234 204 256 226 288 211 321 180 377 154 433 180 487 188 514 226 501 283 531 322 494 373 437 360 405 391 337 369 306 336 258 315 238 288 205 272 186 260 Z" />
-                </g>
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M487 80 531 101 533 136 580 146 626 146 668 110 686 148 679 183 697 238 728 267 706 320 663 330 634 372 586 353 535 329 512 292 501 283 514 226 487 188 508 148 487 113 Z" />
-                </g>
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M668 110 709 74 751 98 785 108 793 71 824 23 849 55 883 79 916 82 954 80 977 68 996 34 1048 28 1062 67 1048 90 1069 122 1068 174 1078 214 1064 260 1038 296 1000 304 958 294 902 307 847 290 802 298 752 270 728 267 697 238 679 183 686 148 Z" />
-                </g>
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M258 315 306 336 337 369 405 391 437 360 494 373 526 416 513 461 539 508 500 558 433 557 375 543 318 557 279 518 287 456 263 414 268 374 Z" />
-                </g>
-                <g className="gm-zone healthy">
-                  <path className="gm-zone-shape" d="M526 416 571 403 611 424 645 424 674 464 716 471 706 524 663 557 621 585 576 565 539 508 513 461 Z" />
-                </g>
-                {!inc20234Resolved && (
-                  <g className="gm-zone active">
-                    <path className="gm-zone-shape" d="M279 518 318 557 375 543 433 557 500 558 539 508 576 565 621 585 599 625 630 687 587 735 525 746 477 721 426 721 382 681 334 667 295 631 253 641 226 615 261 579 Z" />
-                    <foreignObject x="360" y="284" width="230" height="150" className="map-tip">
-                      <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop active-pop">
-                        <b><span></span>Trafford</b><strong>Active issue</strong>
-                        <dl><dt>Status</dt><dd>Service degradation</dd><dt>Incident</dt><dd>INC-20234</dd><dt>Users impacted</dt><dd>12,000</dd><dt>Detail</dt><dd>28 sites · 5G RAN</dd></dl>
-                      </div>
-                    </foreignObject>
-                  </g>
-                )}
-                {inc20234Resolved && (
-                  <g className="gm-zone healthy">
-                    <path className="gm-zone-shape" d="M279 518 318 557 375 543 433 557 500 558 539 508 576 565 621 585 599 625 630 687 587 735 525 746 477 721 426 721 382 681 334 667 295 631 253 641 226 615 261 579 Z" />
-                  </g>
-                )}
-                <g className="gm-zone active"><path className="gm-zone-shape" d="M752 270 802 298 847 290 902 307 958 294 1000 304 1038 296 1060 337 1078 370 1082 426 1054 453 1041 498 998 501 969 532 908 505 848 513 797 543 751 512 726 463 751 421 737 379 757 356 750 315 Z" /></g>
-                <g className="gm-zone healthy"><path className="gm-zone-shape" d="M751 512 797 543 848 513 908 505 969 532 998 501 1013 562 980 634 919 668 861 644 816 663 771 635 735 651 697 607 706 524 716 471 726 463 Z" /></g>
-                <g className="gm-zone degraded">
-                  <path className="gm-zone-shape" d="M599 625 621 585 663 557 697 607 735 651 771 635 816 663 861 644 919 668 980 634 966 718 916 757 852 746 806 770 772 748 724 782 671 739 619 746 611 695 Z" />
-                  <foreignObject x="270" y="312" width="230" height="150" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop degraded-pop">
-                      <b><span></span>Stockport</b><strong>Degraded</strong>
-                      <dl><dt>Status</dt><dd>Packet loss</dd><dt>Incident</dt><dd>INC-2039</dd><dt>Users impacted</dt><dd>6,400</dd><dt>Detail</dt><dd>Auto-mitigating</dd></dl>
-                    </div>
-                  </foreignObject>
-                </g>
+                <rect x="0" y="0" width={GM_MAP_WIDTH} height={GM_MAP_HEIGHT} fill="url(#gmLiveGrid)" />
+                <rect x="0" y="0" width={GM_MAP_WIDTH} height={GM_MAP_HEIGHT} fill="url(#gmLiveStageGlow)" />
+                {GM_GEO.boroughs.map((borough) => {
+                  const meta = GM_ZONE_STATUS[borough.name] || { status: 'good', label: 'Healthy', note: 'All systems nominal' }
+                  const color = GM_STATUS_COLOR[meta.status]
+                  const dotX = borough.c[0] - 46
+                  const labelX = borough.c[0] - 34
+                  const tip = getGmTooltipPosition(borough.c)
 
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="156" cy="352" r="5" /><text x="169" y="358">Wigan</text>
-                  <foreignObject x="172" y="276" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Wigan</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.7% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="330" cy="245" r="5" /><text x="343" y="251">Bolton</text>
-                  <foreignObject x="345" y="185" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Bolton</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.8% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="515" cy="234" r="5" /><text x="528" y="240">Bury</text>
-                  <foreignObject x="520" y="174" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Bury</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.5% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="690" cy="168" r="5" /><text x="703" y="174">Rochdale</text>
-                  <foreignObject x="690" y="112" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Rochdale</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.4% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="421" cy="414" r="5" /><text x="434" y="420">Salford</text>
-                  <foreignObject x="430" y="335" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Salford</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.6% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="594" cy="522" r="5" /><text x="607" y="528">Manchester</text>
-                  <foreignObject x="605" y="426" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Manchester</b><strong>Healthy</strong><dl><dt>Status</dt><dd>Metro core stable</dd><dt>Detail</dt><dd>All systems nominal</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className={`gm-map-label has-tooltip ${inc20234Resolved ? 'healthy' : 'active'}`} tabIndex="0">
-                  {!inc20234Resolved && <circle className="gm-pulse-ring" cx="462" cy="595" r="20" />}
-                  <circle className="gm-location-dot" cx="462" cy="595" r="5" /><text x="475" y="601">Trafford</text>
-                  <foreignObject x="320" y="494" width="260" height="168" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className={`map-pop ${inc20234Resolved ? 'healthy-pop' : 'active-pop'}`}>
-                      <b><span></span>Trafford</b><strong>{inc20234Resolved ? 'Healthy' : 'Active issue'}</strong>
-                      <dl><dt>Status</dt><dd>{inc20234Resolved ? 'All systems nominal' : 'Service degradation'}</dd><dt>Incident</dt><dd>INC-20234</dd><dt>Users impacted</dt><dd>{inc20234Resolved ? '0' : '12,000'}</dd><dt>Detail</dt><dd>{inc20234Resolved ? 'Restored' : <>28 sites &middot; 5G RAN</>}</dd></dl>
-                    </div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip active" tabIndex="0">
-                  <circle className="gm-pulse-ring" cx="832" cy="318" r="20" />
-                  <circle className="gm-location-dot" cx="832" cy="318" r="5" /><text x="845" y="324">Oldham</text>
-                  <foreignObject x="710" y="226" width="260" height="168" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop active-pop"><b><span></span>Oldham</b><strong>Active issue</strong><dl><dt>Status</dt><dd>Node failure</dd><dt>Incident</dt><dd>INC-2035</dd><dt>Users impacted</dt><dd>9,800</dd><dt>Detail</dt><dd>Human NOC engaged</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip healthy" tabIndex="0">
-                  <circle className="gm-location-dot" cx="795" cy="475" r="5" /><text x="808" y="481">Tameside</text>
-                  <foreignObject x="790" y="380" width="250" height="132" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop healthy-pop"><b><span></span>Tameside</b><strong>Healthy</strong><dl><dt>Status</dt><dd>All systems nominal</dd><dt>Detail</dt><dd>99.5% uptime</dd></dl></div>
-                  </foreignObject>
-                </g>
-                <g className="gm-map-label has-tooltip degraded" tabIndex="0">
-                  <circle className="gm-location-dot" cx="724" cy="607" r="5" /><text x="737" y="613">Stockport</text>
-                  <foreignObject x="552" y="490" width="260" height="168" className="map-tip">
-                    <div xmlns="http://www.w3.org/1999/xhtml" className="map-pop degraded-pop"><b><span></span>Stockport</b><strong>Degraded</strong><dl><dt>Status</dt><dd>Packet loss</dd><dt>Incident</dt><dd>INC-2039</dd><dt>Users impacted</dt><dd>6,400</dd><dt>Detail</dt><dd>Auto-mitigating</dd></dl></div>
-                  </foreignObject>
-                </g>
+                  return (
+                    <g
+                      key={borough.code}
+                      className={`gm-live-zone ${meta.status}`}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`${borough.name}: ${meta.label}`}
+                    >
+                      <path className="gm-live-shape" d={borough.d} />
+                      {meta.status === 'bad' && (
+                        <>
+                          <circle className="gm-live-ping" cx={borough.c[0]} cy={borough.c[1]} r="11" />
+                          <circle className="gm-live-ping gm-live-ping-delay" cx={borough.c[0]} cy={borough.c[1]} r="11" />
+                        </>
+                      )}
+                      <circle className="gm-live-dot" cx={dotX} cy={borough.c[1] - 5} r="4.5" style={{ fill: color }} />
+                      <text className="gm-live-label" x={labelX} y={borough.c[1]}>{borough.name}</text>
+                      <foreignObject className="gm-live-tip-wrap" x={tip.x} y={tip.y} width={GM_TOOLTIP_WIDTH} height={GM_TOOLTIP_HEIGHT}>
+                        <div xmlns="http://www.w3.org/1999/xhtml" className="gm-live-tip">
+                          <div className="gm-live-tip-name"><span style={{ background: color }}></span>{borough.name}</div>
+                          <div className={`gm-live-tip-status ${meta.status}`}>{meta.label}</div>
+                          <div className="gm-live-tip-row"><span>Status</span><strong>{meta.note}</strong></div>
+                          {meta.severity && <div className="gm-live-tip-row"><span>Severity</span><strong>{meta.severity}</strong></div>}
+                          {meta.inc && <div className="gm-live-tip-row"><span>Incident</span><strong>{meta.inc}</strong></div>}
+                          {meta.users && <div className="gm-live-tip-row"><span>Users impacted</span><strong>{meta.users}</strong></div>}
+                          {meta.detail && <div className="gm-live-tip-row"><span>Detail</span><strong>{meta.detail}</strong></div>}
+                        </div>
+                      </foreignObject>
+                    </g>
+                  )
+                })}
               </svg>
             </div>
           </div>
@@ -652,44 +578,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <span className="ctitle">Manchester — Zone Map</span>
             <span className="lp"><span className="ld"></span>LIVE</span>
           </div>
-          <div className="mapb">
-            <svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg">
-              <rect width="560" height="320" fill="#D6E4F5"/>
-              <ellipse cx="490" cy="160" rx="55" ry="140" fill="#BDD0E8" opacity=".7"/>
-              <rect x="0" y="265" width="560" height="55" fill="#BDD0E8" opacity=".6"/>
-              <rect x="0" y="0" width="38" height="320" fill="#BDD0E8" opacity=".5"/>
-              <polygon points="238,32 272,28 286,72 292,118 282,175 268,228 248,270 222,278 208,242 204,192 210,140 216,90 225,58" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              <line x1="214" y1="82" x2="288" y2="82" stroke="#A0B8D4" strokeWidth=".5" opacity=".7"/>
-              <line x1="208" y1="132" x2="290" y2="132" stroke="#A0B8D4" strokeWidth=".5" opacity=".7"/>
-              <line x1="206" y1="180" x2="283" y2="180" stroke="#A0B8D4" strokeWidth=".5" opacity=".7"/>
-              <line x1="233" y1="32" x2="232" y2="276" stroke="#A0B8D4" strokeWidth=".5" opacity=".7"/>
-              <line x1="258" y1="30" x2="256" y2="276" stroke="#A0B8D4" strokeWidth=".5" opacity=".7"/>
-              <polygon points="252,32 308,22 358,32 362,82 326,90 292,86 268,70" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              <polygon points="292,118 348,100 408,112 412,162 386,196 338,200 292,178" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              <polygon points="262,270 318,258 368,274 378,300 338,316 268,316 248,300" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              <ellipse cx="110" cy="282" rx="58" ry="28" fill="#C2D2EA" stroke="#8AAACF" strokeWidth="1.5"/>
-              {!inc20234Resolved && <circle cx="250" cy="140" r="18" fill="#E03A3A" opacity=".15"><animate attributeName="r" values="14;24;14" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".15;.04;.15" dur="2s" repeatCount="indefinite"/></circle>}
-              <circle cx="250" cy="140" r="6" fill={inc20234Resolved ? '#00A86B' : '#E03A3A'}/>
-              <circle cx="306" cy="52" r="5" fill="#00A86B"/>
-              <circle cx="352" cy="150" r="5" fill="#00A86B"/>
-              <circle cx="296" cy="285" r="5" fill="#F59E0B"/>
-              <circle cx="110" cy="282" r="5" fill="#00A86B"/>
-              <circle cx="250" cy="200" r="5" fill="#00A86B"/>
-              <circle cx="232" cy="82" r="5" fill="#00A86B"/>
-              <text x="232" y="126" fontSize="10" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Trafford</text>
-              {!inc20234Resolved && <text x="237" y="137" fontSize="8" fill="#E03A3A" fontFamily="Inter,sans-serif">Issue Active</text>}
-              <text x="236" y="202" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Salford</text>
-              <text x="288" y="46" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Stockport</text>
-              <text x="336" y="154" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Oldham</text>
-              <text x="274" y="287" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Rochdale</text>
-              <text x="90" y="286" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Bolton</text>
-              <text x="220" y="76" fontSize="9" fill="#1a2a3a" fontFamily="Inter,sans-serif" fontWeight="600">Bury</text>
-              <rect x="12" y="12" width="110" height="55" rx="6" fill="white" opacity=".88"/>
-              <circle cx="24" cy="26" r="4" fill="#E03A3A"/><text x="32" y="30" fontSize="8.5" fill="#333" fontFamily="Inter,sans-serif">Active Issue</text>
-              <circle cx="24" cy="41" r="4" fill="#F59E0B"/><text x="32" y="45" fontSize="8.5" fill="#333" fontFamily="Inter,sans-serif">Degraded</text>
-              <circle cx="24" cy="56" r="4" fill="#00A86B"/><text x="32" y="60" fontSize="8.5" fill="#333" fontFamily="Inter,sans-serif">Healthy</text>
-            </svg>
-          </div>
+          <div className="mapb"></div>
         </div>
         <div className="card">
           <div className="ch"><span className="ctitle">Event Feed</span></div>
