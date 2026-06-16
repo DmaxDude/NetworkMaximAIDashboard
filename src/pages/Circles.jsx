@@ -19,7 +19,7 @@ const ANA_ICON = (
 )
 
 const AGENTS = [
-  { name: 'SOC Agent',      label: 'pulling live KPIs from 312 affected cells...',               icon: SOC_ICON },
+  { name: 'SOC Agent',      label: 'pulling live KPIs from 28 affected RAN 5G Sites...',        icon: SOC_ICON },
   { name: 'Segment Agent',  label: 'clustering 12000 affected subs by plan, value, geo...',    icon: SEG_ICON },
   { name: 'Analytics Agent',label: 'modelling 6h revenue-at-risk + SLA + churn exposure...',     icon: ANA_ICON },
 ]
@@ -27,9 +27,9 @@ const AGENTS = [
 const BUSINESS_RESPONSE = {
   intro: "Here's the damage so far, Adamâ€” not pretty, but contained ðŸ·ï¸",
   lines: [
-    { bold: 'Business impact â€”  Trafford Metro RAN degradation (Incident #INC-20460)' },
+    { bold: 'Business impact - Trafford Metro 5G RAN degradation (Incident #INC-20234)' },
     { html: '<strong>Customers affected:</strong> ~12000 subscribers across <strong>28 cell sites</strong> under the Trafford aggregation' },
-    { html: '<strong>Service impact:</strong> 5G NR throughput down <strong>62%</strong>, VoLTE call setup failure rate at <strong>8.3%</strong> (baseline 0.4%).' },
+    { html: '<strong>Service impact:</strong> 5G NR throughput down <strong>15%</strong>, Packet Loss at <strong>7.2%</strong> (1.8 x baseline), Average RAN RTT <strong>386 ms</strong> (1.6 x Baseline).' },
     { html: '<strong>Enterprise SLA exposure: 47 enterprise accounts</strong> breaching SLA â€” top 3: <em>FreightOne Logistics</em>, <em>Mercy Health Network</em>, <em>Atlas Rideshare</em>.' },
     { bold: 'Revenue at risk:' },
     { plain: 'Consumer ARPU credits: ~$148K' },
@@ -43,7 +43,7 @@ const BUSINESS_RESPONSE = {
 }
 
 const CANNED = {
-  restore: 'Field teams are on-site at Newark-PoP-2 and restoration is estimated at ~25 minutes. The primary fix is rerouting traffic around Metro-Ring-7 and validating fiber integrity before full service recovery.',
+  restore: 'Restoration is on track. Predictive detection caught a transport-driven degradation ahead of SLA breach; an incomplete LAG bundle forced traffic onto a single link, and a self-healing config push restored load-balancing across all 28 sites.',
   comms:   'Recommend sending an SMS advisory to impacted subscribers, plus an internal ops alert for service desk and field crew status updates. Keep messages concise and include expected restoration window.',
 }
 
@@ -187,7 +187,7 @@ export default function GreySkiesPage() {
               <div className="gs-msg-bubble">
                 <p>Heads up, Adamâ€” something&apos;s off in the  Trafford ðŸš¨</p>
                 <p>ðŸš¨ <strong>Active alert â€” Network degradation detected</strong></p>
-                <p><strong>Incident #INC-20460</strong> Â·  Trafford Metro RAN Â· severity <strong>P1</strong></p>
+                <p><strong>Incident #INC-20234</strong> � Trafford Metro 5G RAN � severity <strong>P1</strong></p>
                 <p><strong>Scope:</strong>Scope: 28 RAN 5G sites under the Trafford aggregation</p>
                 <p><strong>Symptom:</strong> 5G NR throughput down <strong>15%</strong> Â· Packet Loss <strong>7.22%</strong> (1.8 x baseline) Average RAN RTT 386 ms (1.6 x Baseline)</p>
                <p><strong>Likely cause:</strong>Backhaul capacity congestion. Confidence will firm as the signal develops.</p>

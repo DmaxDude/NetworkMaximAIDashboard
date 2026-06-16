@@ -23,18 +23,17 @@ const NOTIF_ICON = (
 )
 
 const AGENTS = [
-  { name: 'SOC Agent', label: 'pulling live KPIs from 312 affected cells...', icon: SOC_ICON },
+  { name: 'SOC Agent', label: 'pulling live KPIs from 28 affected RAN 5G Sites...', icon: SOC_ICON },
   { name: 'Segment Agent', label: 'clustering 12000 affected subs by plan, value, geo...', icon: SEG_ICON },
   { name: 'Analytics Agent', label: 'modelling 6h revenue-at-risk + SLA + churn exposure...', icon: ANA_ICON },
 ]
 
 const RESTORE_AGENTS = [
-  { name: 'SOC Agent', label: 'running RCA — Metro-Ring-7 transport, splice + KPI soak...', icon: SOC_ICON },
-  { name: 'Analytics Agent', label: 'benchmarking against 14 similar incidents · 82% confidence...', icon: ANA_ICON },
+  { name: 'SOC Agent', label: 'running RCA & Recommended Mitigation...', icon: SOC_ICON },
 ]
 
 const COMMS_AGENTS = [
-  { name: 'SOC Agent',          label: 'confirming degraded footprint — 312 cells, VoLTE/IMS impaired...', icon: SOC_ICON },
+  { name: 'SOC Agent',          label: 'confirming degraded footprint - 28 5G RAN Sites (Trafford)...', icon: SOC_ICON },
   { name: 'Segment Agent',      label: 'scanning 12000 affected subs · finding lifestyle clusters...', icon: SEG_ICON },
   { name: 'Segment Agent',      label: 'identified 3 segments: Creators · Travellers · Families...', icon: SEG_ICON },
   { name: 'Notification Agent', label: 'drafting per-segment SMS — tone + CTA tuned to each cluster...', icon: NOTIF_ICON },
@@ -49,7 +48,7 @@ const COMMS_RESPONSE = {
     { html: '<strong>Recipients:</strong> 12000 subscribers across 3 segments (full breakdown below)' },
     { html: '<strong>Channel mix</strong> (designed around the VoLTE/IMS degradation):' },
     { html: '\uD83D\uDCE8 <strong>SMS via legacy SMS-C / CS fallback</strong> \u2014 bypasses degraded VoLTE bearer, <em>~99% expected delivery</em>' },
-    { html: '\uD83D\uDD14 <strong>Push notification</strong> \u2014 for subs on Wi-Fi or roamed onto healthy cells, <em>~62% reachable</em>' },
+    { html: '\uD83D\uDD14 <strong>Push notification</strong> \u2014 for subs on 5G Data or roamed onto healthy cells, <em>~62% reachable</em>' },
     { html: '\uD83D\uDCF1 <strong>In-app banner</strong> in the CareX app \u2014 persistent, <em>100% eventual on next app open</em>' },
     { html: '<strong>Throughput:</strong> 12,000 SMS/min \u2192 full send in <strong>~15 min</strong> \u00b7 est. cost <strong>$1,289</strong>' },
     { html: '<strong>Compliance:</strong> TCPA service-message exemption \u2705 \u00b7 STOP honored \u2705 \u00b7 multilingual EN/ES' },
@@ -91,9 +90,9 @@ const COMMS_RESPONSE = {
 const BUSINESS_RESPONSE = {
   intro: "Here's the damage so far, Adam— not pretty, but contained 🏷️",
   lines: [
-    { bold: 'Business impact —  Trafford Metro RAN degradation (Incident #INC-20234)' },
+    { bold: 'Business impact - Trafford Metro 5G RAN degradation (Incident #INC-20234)' },
     { html: '<strong>Customers affected:</strong> ~12000 subscribers across <strong>28 cell sites</strong> under the Trafford aggregation' },
-    { html: '<strong>Service impact:</strong> 5G NR throughput down <strong>15%</strong>, VoLTE call setup failure rate at <strong>7.2%</strong> (baseline 1.8x).' },
+    { html: '<strong>Service impact:</strong> 5G NR throughput down <strong>15%</strong>, Packet Loss at <strong>7.2%</strong> (1.8 x baseline), Average RAN RTT <strong>386 ms</strong> (1.6 x Baseline).' },
     { html: '<strong>Enterprise SLA exposure: 47 enterprise accounts</strong> breaching SLA — top 3: <em>FreightOne Logistics</em>, <em>Mercy Health Network</em>, <em>Atlas Rideshare</em>.' },
     { bold: 'Revenue at risk:' },
     { plain: 'Consumer ARPU credits: ~$148K' },
@@ -110,14 +109,11 @@ const RESTORE_RESPONSE = {
   intro: "Good news, Adam\u2014 there's a clear path home \uD83D\uDD27",
   lines: [
     { html: '<strong>Restoration is on track</strong> and NetOps has a clear recovery path.' },
-    { html: '<strong>Root cause:</strong> <strong>Backhaul capacity congestion</strong> on <strong>Metro-Ring-7</strong> following scheduled fiber maintenance at <em>Newark-PoP-2</em>. Backup path congested; 4 eNodeBs in fallback failed to re-home.' },
+    { html: '<strong>Root cause:</strong> Predictive detection caught a transport-driven degradation ahead of SLA breach. A connectivity fault failed the BDN-PE02 to PE02 path over onto BDN-PE01 to PE01, where an incomplete LAG bundle forced all traffic onto a single link. A self-healing config push restored load-balancing across both links and held throughput within SLA across all 28 sites.' },
     { bold: 'Recovery plan:' },
-    { html: '\u2705 Traffic steered to <strong>Ring-9</strong> \u2014 <em>complete</em>' },
-    { html: '\u2705 Field team on-site at <em>Newark-PoP-2</em>' },
-    { html: '\u25A1 Splice + OTDR validation' },
-    { html: '\u23F3 Re-home 4 eNodeBs + KPI soak' },
-    { html: '<strong>Confidence:</strong> 82% based on similar in-PoP splice incidents.' },
-    { html: '<em>Heads-up:</em> if splice validation fails, fallback is a cold-spare transponder swap. I\u2019ll flag it the second we see a wobble.' },
+    { html: '\u2705 <strong>Pushing LAG config to BDN-PE01</strong> -> add xe-0/0/1 -> ae1' },
+    { html: '\u2705 <strong>LACP negotiation</strong> -> second member up, in bundle' },
+    { html: '\u2705 <strong>Validating load distribution</strong> -> traffic balancing ~50/50' },
   ],
 }
 
@@ -150,10 +146,10 @@ const RESTORED_ALERT = {
   intro: 'Good news incoming, Adam ',
   lines: [
     { html: '\u2705 <strong>Service restored \u2014 Incident #INC-20234</strong>' },
-    { html: 'Just in from NetOps \u2014 splice validated at <em>Newark-PoP-2</em>, all 4 eNodeBs re-homed, KPI soak passed.' },
-    { html: '<strong>5G NR throughput:</strong> 98.2% of baseline \u2705' },
-    { html: '<strong>VoLTE setup failure:</strong> 0.3% (back inside SLA) \u2705' },
-    { html: '<strong>Sites in-service:</strong> 312\u00a0/\u00a0312 \u2705' },
+    { html: '<strong>5G NR throughput:</strong> within SLA \u2705' },
+    { html: '<strong>AVG RAN RTT:</strong> within SLA \u2705' },
+    { html: '<strong>Packet Loss:</strong> within SLA \u2705' },
+    { html: '<strong>Sites in-service:</strong> 28/28 \u2705' },
     { html: '<strong>Restoration status:</strong> validated' },
     { plain: "Now\u2019s the moment to (a) send a warm all-clear, and then (b) make it up to people with a goodwill package. Sentiment is still recoverable." },
     { plain: 'Want me to draft the restoration comms?' },
@@ -161,7 +157,7 @@ const RESTORED_ALERT = {
 }
 
 const RESTORATION_COMMS_AGENTS = [
-  { name: 'SOC Agent', label: 'confirming all 312 sites green + KPIs in-SLA...', icon: SOC_ICON },
+  { name: 'SOC Agent', label: 'confirming all 28 RAN 5G Trafford sites green + KPIs in-SLA...', icon: SOC_ICON },
   { name: 'Segment Agent', label: 're-scoping audience (excluding 38 STOP opt-outs)...', icon: SEG_ICON },
   { name: 'Notification Agent', label: 'writing warm all-clear, segment-aware (no promo yet)...', icon: NOTIF_ICON },
   { name: 'Notification Agent', label: 're-enabling push + in-app now that cells are healed...', icon: NOTIF_ICON },
@@ -171,7 +167,6 @@ const RESTORATION_COMMS_RESPONSE = {
   intro: "Let's close this loop on a high note, Adam",
   lines: [
     { html: '<strong>Service restoration confirmed &mdash; all KPIs green &#9989;</strong>' },
-    { html: '5G throughput back to <strong>98.2%</strong> of baseline &middot; VoLTE setup failure <strong>0.3%</strong> &middot; all 312 sites in-service' },
     { html: 'Restoration completed successfully.' },
     { html: '<strong>&#128221; Restoration SMS &mdash; please review before dispatch</strong> <em>(12000 subs + 47 enterprise contacts)</em>:' },
     { html: '<em>[NOVA] Good news &mdash; service in your area is fully restored. Thanks for sticking with us. We&rsquo;ll be in touch shortly with a small thank-you. &mdash; Team NOVA</em>' },
@@ -338,9 +333,9 @@ const COMPENSATION_ROLLOUT_RESPONSE = {
 }
 
 const INCIDENT_TIMELINE = [
-  ['warn', 'Degradation detected', 'P1 - Metro-Ring-7 transport failure - 312 sites, ~184.2K subs'],
+  ['warn', 'Degradation detected', 'Service Degradation Detected - 28 5G RAN sites, ~12K subs'],
   ['msg', 'Outage comms sent (per segment)', '3 segment-tuned SMS variants - 99.2% delivery - 3-channel mix'],
-  ['ok', 'Service restored', 'Splice validated at Newark-PoP-2 - KPI soak passed'],
+  ['ok', 'Service restored', 'Configuration Remediation Validated - KPI soak passed'],
   ['msg', 'Restoration comms sent', 'All-clear pushed across SMS / push / in-app - sentiment 82% positive'],
   ['msg', 'Per-segment compensation live', 'Approved bundles published to CareX - redemption tracking on'],
   ['lock', 'Incident auto-closed', 'RCA and watch handed off'],
@@ -605,7 +600,7 @@ export default function CirclesInline({ onResolveIncident }) {
               <div className="gs-msg-bubble">
                 <p>Heads up, Adam— something&apos;s off in Trafford 🚨</p>
                 <p>🚨 <strong>Active alert — Service degradation detected</strong></p>
-                <p><strong>Incident #INC-20234</strong> · Trafford Metro RAN · severity <strong>P1</strong></p>
+                <p><strong>Incident #INC-20234</strong> · Trafford Metro 5G RAN · severity <strong>P1</strong></p>
                 <p><strong>Scope:</strong> 28 RAN 5G sites under the Trafford aggregation</p>
                 <p><strong>Symptom:</strong> 5G NR throughput down <strong>15%</strong> · Packet Loss <strong>7.22%</strong> (1.8 x baseline) Average RAN RTT 386 ms (1.6 x Baseline)</p>
                 <p><strong>Likely cause:</strong> Backhaul capacity congestion. Confidence will firm as the signal develops.</p>
