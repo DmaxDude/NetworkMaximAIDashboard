@@ -17,12 +17,12 @@ const pageMeta = {
 }
 
 const stepCount = 6
-const GREYSKIES_URL = 'https://greyskies-presentations.netlify.app/'
+const GREYSKIES_URL = 'https://greyskies-presentations.netlify.app/catalyst_demo/'
 
 const GM_MAP_WIDTH = 1000
 const GM_MAP_HEIGHT = 747
 const GM_TOOLTIP_WIDTH = 248
-const GM_TOOLTIP_HEIGHT = 176
+const GM_TOOLTIP_HEIGHT = 250
 const GM_STATUS_COLOR = {
   good: '#32cfaa',
   warn: '#f8b333',
@@ -107,28 +107,28 @@ const reportIssues = [
     type: 'Packet Loss',
     severity: 'Med',
     status: 'Active',
-    rootCause: 'Edge congestion on aggregation uplink',
+    rootCause: 'Microbursts on SKP-MW03 uplink saturating egress queues',
     usersImpacted: 6400,
     sites: 14,
     resolution: '42 min',
     resolutionScore: 54,
-    compensationClaimed: 32000,
+    compensationClaimed: 33000,
     usersCompClaimed: 1740,
     claimRate: 27,
-    ossHealth: 79,
-    bssHealth: 86,
-    packetLoss: 4.8,
+    ossHealth: 64,
+    bssHealth: 74,
+    packetLoss: 4.1,
     throughputDrop: 9,
-    rtt: 244,
-    revenueAtRisk: 61000,
+    rtt: 240,
+    revenueAtRisk: 71000,
     agent: 'Network Agent',
-    recommendation: 'Shift traffic to alternate aggregation path and watch subscriber complaint volume.',
+    recommendation: 'Re-balance QoS weights on SKP-MW03 and watch buffer occupancy for 30 min.',
     segments: [
-      ['Creator Boost', 520, 9800],
-      ['Roam & Recover', 410, 7600],
-      ['Family Care', 810, 14600],
+      ['Creator Boost', 1420, 29000],
+      ['Roam & Recover', 980, 18000],
+      ['Family Care', 1980, 36000],
     ],
-    trend: [28, 36, 54, 62, 58, 49],
+    trend: [0, 7, 42, 63, 70, 66, 58, 47, 36, 27, 19, 13, 8, 5, 3],
   },
   {
     id: 'INC-2035',
@@ -228,8 +228,8 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [showEscalationNote, setShowEscalationNote] = useState(false)
   const [isSimRunning, setIsSimRunning] = useState(false)
   const [showIncNotif, setShowIncNotif] = useState(true)
-  const [selectedReportIssueId, setSelectedReportIssueId] = useState(reportIssues[0].id)
-  const [inc20234Resolved, setInc20234Resolved] = useState(false)
+  const [selectedReportIssueId, setSelectedReportIssueId] = useState(reportIssues[1].id)
+  const [inc20234Resolved, setInc20234Resolved] = useState(true)
   const timers = useRef([])
   const simulatorBodyRef = useRef(null)
   const simulatorStepRefs = useRef([])
@@ -345,15 +345,9 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   })
 
   const [pageTitle, pageSubtitle] = pageMeta[activePage]
-  const selectedReportIssue = reportIssues.find((issue) => issue.id === selectedReportIssueId) || reportIssues[0]
-  const reportTotals = reportIssues.reduce((total, issue) => ({
-    usersImpacted: total.usersImpacted + issue.usersImpacted,
-    sites: total.sites + issue.sites,
-    compensationClaimed: total.compensationClaimed + issue.compensationClaimed,
-    usersCompClaimed: total.usersCompClaimed + issue.usersCompClaimed,
-    revenueAtRisk: total.revenueAtRisk + issue.revenueAtRisk,
-  }), { usersImpacted: 0, sites: 0, compensationClaimed: 0, usersCompClaimed: 0, revenueAtRisk: 0 })
-  const avgClaimRate = Math.round(reportIssues.reduce((sum, issue) => sum + issue.claimRate, 0) / reportIssues.length)
+  const selectedReportIssue = reportIssues.find((issue) => issue.id === selectedReportIssueId) || reportIssues[1]
+  const reportTotals = { usersImpacted: 35100, sites: 81, compensationClaimed: 267000, usersCompClaimed: 13850, revenueAtRisk: 458000 }
+  const avgClaimRate = 34
   const maxUsersImpacted = Math.max(...reportIssues.map((issue) => issue.usersImpacted))
 
   return (
@@ -402,6 +396,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     <div className={navClass('greyskies')} onClick={openGreySkies}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"></path></svg>
       Grey Skies
+      <svg className="nav-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg>
     </div>
     <div className={navClass('circles')} onClick={() => goTo('circles')}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.4"></circle></svg>
@@ -761,188 +756,218 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
 
     {/* REPORTS */}
     <div className={pageClass('reports')} id="page-reports">
-      
-      <div className="card report-issue-table">
-        <div className="report-section-head">
-          <div><strong>Issues</strong><span>Click an issue to update the report dashboard</span></div>
-          <b>{reportIssues.length} incidents</b>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Incident</th><th>Zone</th><th>Type</th><th>Severity</th><th>Status</th><th>Users</th><th>Resolution</th><th>Comp Claims</th></tr>
-          </thead>
-          <tbody>
-            {reportIssues.map((issue) => {
-              const reportStatus = issue.id === 'INC-20234' && inc20234Resolved ? 'Resolved' : issue.status
-              return (
-                <tr key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
-                  <td><strong>{issue.id}</strong></td>
-                  <td>{issue.zone}</td>
-                  <td>{issue.type}</td>
-                  <td><span className={`sev ${issue.severity === 'High' ? 'H' : issue.severity === 'Med' ? 'M' : 'L'}`}>{issue.severity}</span></td>
-                  <td><span className={`pill ${reportStatus === 'Resolved' ? 'rs' : reportStatus === 'Escalated' ? 'es' : 'ac'}`}>{reportStatus}</span></td>
-                  <td>{issue.usersImpacted.toLocaleString()}</td>
-                  <td>{issue.resolution}</td>
-                  <td>{issue.usersCompClaimed.toLocaleString()}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="report-kpi-grid">
-        <div className="card report-kpi"><span>Users impacted</span><strong>{reportTotals.usersImpacted.toLocaleString()}</strong><em>Across {reportTotals.sites} OSS sites</em></div>
-        <div className="card report-kpi"><span>Compensation claimed</span><strong>${Math.round(reportTotals.compensationClaimed / 1000)}K</strong><em>{reportTotals.usersCompClaimed.toLocaleString()} users claimed</em></div>
-        <div className="card report-kpi"><span>Claim rate</span><strong>{avgClaimRate}%</strong><em>BSS uptake average</em></div>
-        <div className="card report-kpi"><span>Revenue at risk</span><strong>${Math.round(reportTotals.revenueAtRisk / 1000)}K</strong><em>OSS + BSS exposure</em></div>
-      </div>
-
-      <div className="report-dashboard-grid">
-        <div className="card report-panel report-focus">
-          <div className="report-section-head"><div><strong>{selectedReportIssue.id} - {selectedReportIssue.zone}</strong><span>{selectedReportIssue.type} / {selectedReportIssue.agent}</span></div></div>
-          <div className="report-focus-body">
-            <div className="report-focus-metric"><span>Users impacted</span><strong>{selectedReportIssue.usersImpacted.toLocaleString()}</strong></div>
-            <div className="report-focus-metric"><span>Resolution time</span><strong>{selectedReportIssue.resolution}</strong></div>
-            <div className="report-focus-metric"><span>Compensation claimed</span><strong>${Math.round(selectedReportIssue.compensationClaimed / 1000)}K</strong></div>
-            <div className="report-focus-metric"><span>Users claimed comp</span><strong>{selectedReportIssue.usersCompClaimed.toLocaleString()}</strong></div>
+      <div className="reports-page">
+        <section className="card report-issue-table">
+          <div className="report-table-title">
+            <div><strong>Issues</strong><span>click an issue to update the report dashboard</span></div>
+            <b>{reportIssues.length} incidents</b>
           </div>
-          <div className="report-root"><span>Root cause</span><p>{selectedReportIssue.rootCause}</p></div>
-          <div className="report-root"><span>Recommended action</span><p>{selectedReportIssue.recommendation}</p></div>
+          <table>
+            <thead>
+              <tr><th>Incident</th><th>Zone</th><th>Type</th><th>Severity</th><th>Status</th><th>Users</th><th>Resolution</th><th>Comp Claims</th></tr>
+            </thead>
+            <tbody>
+              {reportIssues.map((issue) => {
+                const reportStatus = issue.id === 'INC-20234' && inc20234Resolved ? 'Resolved' : issue.status
+                return (
+                  <tr key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
+                    <td><strong>{issue.id}</strong></td>
+                    <td>{issue.zone}</td>
+                    <td>{issue.type}</td>
+                    <td><span className={`report-sev ${issue.severity.toLowerCase()}`}>{issue.severity}</span></td>
+                    <td><span className={`report-status ${reportStatus.toLowerCase()}`}>{reportStatus}</span></td>
+                    <td>{issue.usersImpacted.toLocaleString()}</td>
+                    <td>{issue.resolution}</td>
+                    <td>{issue.usersCompClaimed.toLocaleString()}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </section>
+
+        <div className="report-kpi-grid">
+          <div className="card report-kpi report-kpi-red"><span>Users Impacted</span><strong>{reportTotals.usersImpacted.toLocaleString()}</strong><em>Across {reportTotals.sites} OSS sites</em></div>
+          <div className="card report-kpi report-kpi-amber"><span>Compensation Claimed</span><strong>${Math.round(reportTotals.compensationClaimed / 1000)}<small>K</small></strong><em>{reportTotals.usersCompClaimed.toLocaleString()} users claimed</em></div>
+          <div className="card report-kpi report-kpi-green"><span>Claim Rate</span><strong>{avgClaimRate}<small>%</small></strong><em>BSS uptake average</em></div>
+          <div className="card report-kpi report-kpi-red"><span>Revenue At Risk</span><strong>${Math.round(reportTotals.revenueAtRisk / 1000)}<small>K</small></strong><em>OSS + BSS exposure</em></div>
         </div>
 
-        <div className="card report-panel">
-          <div className="report-section-head"><div><strong>OSS Health</strong><span>Network symptoms and recovery pressure</span></div><b>{selectedReportIssue.ossHealth}%</b></div>
-          <div className="report-bars">
-            <div><span>Throughput drop</span><b>{selectedReportIssue.throughputDrop}%</b><i style={{width: `${Math.min(100, selectedReportIssue.throughputDrop * 3)}%`}}></i></div>
-            <div><span>Packet loss</span><b>{selectedReportIssue.packetLoss}%</b><i style={{width: `${Math.min(100, selectedReportIssue.packetLoss * 10)}%`}}></i></div>
-            <div><span>RAN RTT</span><b>{selectedReportIssue.rtt} ms</b><i style={{width: `${Math.min(100, selectedReportIssue.rtt / 5)}%`}}></i></div>
-            <div><span>Sites affected</span><b>{selectedReportIssue.sites}</b><i style={{width: `${Math.min(100, selectedReportIssue.sites * 3)}%`}}></i></div>
-          </div>
+        <div className="report-primary-grid">
+          <section className="card report-panel report-focus-card">
+            <div className="report-card-head">
+              <strong>{selectedReportIssue.id} · {selectedReportIssue.zone}</strong>
+              <span className="report-status active">Active</span>
+            </div>
+            <div className="report-focus-sub">{selectedReportIssue.type} · {selectedReportIssue.agent}</div>
+            <div className="report-focus-body">
+              <div className="report-focus-metric"><span>Users Impacted</span><strong>{selectedReportIssue.usersImpacted.toLocaleString()}</strong></div>
+              <div className="report-focus-metric"><span>Resolution Time</span><strong>{selectedReportIssue.resolution}</strong></div>
+              <div className="report-focus-metric"><span>Compensation Claimed</span><strong>${Math.round(selectedReportIssue.compensationClaimed / 1000)}K</strong></div>
+              <div className="report-focus-metric"><span>Users Claimed Comp</span><strong>{selectedReportIssue.usersCompClaimed.toLocaleString()}</strong></div>
+            </div>
+            <div className="report-root"><span>Root Cause</span><p>{selectedReportIssue.rootCause}</p></div>
+            <div className="report-root"><span>Recommended Action</span><p>{selectedReportIssue.recommendation}</p></div>
+          </section>
+
+          <section className="card report-panel">
+            <div className="report-card-head"><strong>OSS Health</strong><b>{selectedReportIssue.ossHealth}%</b></div>
+            <div className="report-panel-sub">Network symptoms and recovery pressure</div>
+            <div className="report-bars">
+              <div><span>Throughput drop</span><b>{selectedReportIssue.throughputDrop}%</b><i><em style={{width: '22%'}}></em></i></div>
+              <div><span>Packet loss</span><b>{selectedReportIssue.packetLoss.toFixed(2)}%</b><i><em style={{width: '48%'}}></em></i></div>
+              <div><span>RAN RTT</span><b>{selectedReportIssue.rtt} ms</b><i><em style={{width: '52%'}}></em></i></div>
+              <div><span>Sites affected</span><b>{selectedReportIssue.sites}</b><i><em style={{width: '46%'}}></em></i></div>
+            </div>
+          </section>
+
+          <section className="card report-panel">
+            <div className="report-card-head"><strong>BSS Impact</strong><b>{selectedReportIssue.bssHealth}%</b></div>
+            <div className="report-panel-sub">Customer care, claims, and revenue exposure</div>
+            <div className="report-donut-row">
+              <div className="report-donut" style={{'--p': `${selectedReportIssue.claimRate}%`}}><strong>{selectedReportIssue.claimRate}%</strong><span>claim rate</span></div>
+              <dl><div><dt>Claims</dt><dd>{selectedReportIssue.usersCompClaimed.toLocaleString()}</dd></div><div><dt>Comp value</dt><dd>${selectedReportIssue.compensationClaimed.toLocaleString()}</dd></div><div><dt>Revenue risk</dt><dd>${selectedReportIssue.revenueAtRisk.toLocaleString()}</dd></div></dl>
+            </div>
+          </section>
         </div>
 
-        <div className="card report-panel">
-          <div className="report-section-head"><div><strong>BSS Impact</strong><span>Customer care, claims, and revenue exposure</span></div><b>{selectedReportIssue.bssHealth}%</b></div>
-          <div className="report-donut-row">
-            <div className="report-donut" style={{'--p': `${selectedReportIssue.claimRate}%`}}><strong>{selectedReportIssue.claimRate}%</strong><span>claim rate</span></div>
-            <dl><div><dt>Claims</dt><dd>{selectedReportIssue.usersCompClaimed.toLocaleString()}</dd></div><div><dt>Comp value</dt><dd>${selectedReportIssue.compensationClaimed.toLocaleString()}</dd></div><div><dt>Revenue risk</dt><dd>${selectedReportIssue.revenueAtRisk.toLocaleString()}</dd></div></dl>
-          </div>
+        <div className="report-aggregate-grid">
+          <section className="card report-panel">
+            <div className="report-card-head"><strong>Aggregated Impact By Issue</strong></div>
+            <div className="report-panel-sub">Users impacted compared with compensation claimers</div>
+            <div className="report-impact-chart">
+              {reportIssues.map((issue) => (
+                <button type="button" key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
+                  <span>{issue.zone}</span>
+                  <i><b style={{width: `${(issue.usersImpacted / maxUsersImpacted) * 100}%`}}></b><em style={{width: `${(issue.usersCompClaimed / issue.usersImpacted) * 100}%`}}></em></i>
+                  <strong>{issue.usersImpacted.toLocaleString()}</strong>
+                </button>
+              ))}
+            </div>
+            <div className="report-legend"><span><i></i> impacted users</span><span><i></i> compensation claimers</span></div>
+          </section>
+
+          <section className="card report-panel report-score-card">
+            <div className="report-card-head"><strong>OSS/BSS Aggregate Score</strong></div>
+            <div className="report-panel-sub">Combined operational readiness across all report issues</div>
+            <div className="report-score-list">
+              <div><span>OSS average health</span><strong>77%</strong><i><em className="cyan" style={{width: '77%'}}></em></i></div>
+              <div><span>BSS average readiness</span><strong>85%</strong><i><em className="green" style={{width: '85%'}}></em></i></div>
+              <div><span>Compensation uptake</span><strong>34%</strong><i><em className="amber" style={{width: '34%'}}></em></i></div>
+            </div>
+          </section>
         </div>
 
-        <div className="card report-panel report-wide">
-          <div className="report-section-head"><div><strong>Aggregated Impact By Issue</strong><span>Users impacted compared with compensation claimers</span></div></div>
-          <div className="report-impact-chart">
-            {reportIssues.map((issue) => (
-              <button type="button" key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
-                <span>{issue.zone}</span><i><b style={{width: `${(issue.usersImpacted / maxUsersImpacted) * 100}%`}}></b><em style={{width: `${(issue.usersCompClaimed / maxUsersImpacted) * 100}%`}}></em></i><strong>{issue.usersImpacted.toLocaleString()}</strong>
-              </button>
-            ))}
-          </div>
-          <div className="report-legend"><span><i></i> impacted users</span><span><i></i> compensation claimers</span></div>
-        </div>
-
-        <div className="report-pair">
-          <div className="card report-panel">
-            <div className="report-section-head"><div><strong>Incident Pressure Curve</strong><span>Issue severity shape from detection to recovery</span></div></div>
-            <svg className="report-line-chart" viewBox="0 0 320 150" preserveAspectRatio="none">
-              <polyline points={selectedReportIssue.trend.map((value, index) => `${index * 64},${145 - value}`).join(' ')} />
-              {selectedReportIssue.trend.map((value, index) => <circle key={`${value}-${index}`} cx={index * 64} cy={145 - value} r="4" />)}
+        <div className="report-bottom-grid">
+          <section className="card report-panel report-pressure-card">
+            <div className="report-card-head">
+              <strong>Incident Pressure Curve</strong>
+              <span className="report-info">i</span>
+            </div>
+            <div className="report-panel-sub">Pressure index over the incident lifecycle — detection to recovery</div>
+            <svg className="report-pressure-chart" viewBox="0 0 640 260" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="reportPressureFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stopColor="#20b6d7" stopOpacity=".22" />
+                  <stop offset="1" stopColor="#20b6d7" stopOpacity=".02" />
+                </linearGradient>
+              </defs>
+              <line className="grid" x1="64" y1="66" x2="604" y2="66" />
+              <line className="grid" x1="64" y1="122" x2="604" y2="122" />
+              <line className="grid" x1="64" y1="178" x2="604" y2="178" />
+              <text className="axis-label" x="18" y="128" transform="rotate(-90 18 128)">PRESSURE INDEX</text>
+              <text className="tick" x="42" y="69">100</text>
+              <text className="tick" x="49" y="125">50</text>
+              <text className="tick" x="56" y="212">0</text>
+              <path className="area" d="M64 212 C82 204 92 190 104 170 C130 124 160 86 208 76 C256 66 300 82 346 104 C398 129 438 153 492 170 C535 184 574 191 604 195 L604 212 L64 212 Z" />
+              <path className="line" d="M64 212 C82 204 92 190 104 170 C130 124 160 86 208 76 C256 66 300 82 346 104 C398 129 438 153 492 170 C535 184 574 191 604 195" />
+              <circle className="peak" cx="208" cy="76" r="5" />
+              <text className="peak-label" x="184" y="60">Peak 70</text>
+              <text className="x-label" x="64" y="238">Detected</text>
+              <text className="x-label end" x="604" y="238">Recovered · 42 min</text>
             </svg>
-          </div>
+          </section>
 
-          <div className="card report-panel">
-            <div className="report-section-head"><div><strong>Compensation Mix</strong><span>Claims and spend by BSS segment</span></div></div>
+          <section className="card report-panel">
+            <div className="report-card-head"><strong>Compensation Mix</strong></div>
+            <div className="report-panel-sub">Claims and spend by BSS segment</div>
             <div className="report-segments">
               {selectedReportIssue.segments.map(([name, users, spend]) => <div key={name}><span>{name}</span><strong>{users.toLocaleString()} users</strong><b>${Math.round(spend / 1000)}K</b></div>)}
             </div>
-          </div>
+          </section>
         </div>
-
       </div>
     </div>
 
     {/* AI GOVERNANCE */}
     <div className={pageClass('governance')} id="page-governance">
-      
-
-      {/* KPI ROW */}
       <div className="gov-kpi-row">
-        <div className="card gov-kpi">
-          <div className="gov-kpi-top">
-            <div className="gov-kpi-ico">🛡️</div>
-            <div className="gscore-wrap">
-              <div className="gscore-ring">
-                <svg width="52" height="52" viewBox="0 0 52 52">
-                  <circle cx="26" cy="26" r="22" fill="none" stroke="#E4E9F2" strokeWidth="4"/>
-                  <circle cx="26" cy="26" r="22" fill="none" stroke="#00A86B" strokeWidth="4"
-                    strokeDasharray="138 138" strokeDashoffset="6" strokeLinecap="round"/>
-                </svg>
-                <div className="gscore-ring-num">96</div>
-              </div>
-            </div>
-          </div>
-          <div className="gov-kpi-val cg">96<span style={{fontSize: '14px'}}>/100</span></div>
+        <div className="card gov-kpi gov-kpi-good">
           <div className="gov-kpi-lbl">Governance Score</div>
+          <div className="gov-kpi-val">96<span>/100</span></div>
           <div className="gov-kpi-sub">INC-20234 cleared active checks</div>
         </div>
-        <div className="card gov-kpi">
-          <div className="gov-kpi-top"><div className="gov-kpi-ico">📋</div></div>
-          <div className="gov-kpi-val cb">6</div>
+        <div className="card gov-kpi gov-kpi-good">
           <div className="gov-kpi-lbl">Policies Active</div>
+          <div className="gov-kpi-val">6</div>
           <div className="gov-kpi-sub">Incident Comp Policy v3.2 enforced</div>
         </div>
-        <div className="card gov-kpi">
-          <div className="gov-kpi-top"><div className="gov-kpi-ico">⚡</div></div>
-          <div className="gov-kpi-val">9<span style={{fontSize: '13px', color: 'var(--muted)'}}> / 9</span></div>
+        <div className="card gov-kpi gov-kpi-good">
           <div className="gov-kpi-lbl">Decisions Today</div>
+          <div className="gov-kpi-val">9<span>/9</span></div>
           <div className="gov-kpi-sub">Demo workflow gates completed</div>
         </div>
-        <div className="card gov-kpi">
-          <div className="gov-kpi-top"><div className="gov-kpi-ico">🚩</div></div>
-          <div className="gov-kpi-val ca">1</div>
+        <div className="card gov-kpi gov-kpi-watch">
           <div className="gov-kpi-lbl">Flags Raised</div>
+          <div className="gov-kpi-val">1</div>
           <div className="gov-kpi-sub">NORS watch at 612K user-min</div>
         </div>
       </div>
 
-      {/* ROW 2: Authorization Matrix + Compensation Guardrails */}
-      <div className="gov-grid2">
-
-        {/* Authorization Matrix */}
-        <div className="card gov-card">
-          <div className="gov-card-title"><span>✅</span> Action Authorization Matrix</div>
+      <div className="gov-panel-grid">
+        <section className="card gov-card gov-matrix-card">
+          <div className="gov-card-title">Action Authorization Matrix</div>
           <table className="auth-table">
             <thead>
               <tr><th>Action</th><th>Agent</th><th>Threshold</th><th>Authorization</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td>Service-Alert (Degradation)</td><td>Notification Agent</td><td>12,000 subs · TCPA service message</td>
-                <td><span className="auth-badge auth-auto">● Autonomous</span></td>
+                <td><strong>Service-Alert<br />(Degradation)</strong></td>
+                <td>Notification<br />Agent</td>
+                <td>12,000 subs ·<br />TCPA service<br />message</td>
+                <td><span className="auth-badge auth-auto"><i></i>Autonomous</span></td>
               </tr>
               <tr>
-                <td>RAN RCA + LAG remediation</td><td>SOC Agent</td><td>28 5G RAN sites · KPI validation</td>
-                <td><span className="auth-badge auth-auto">● Autonomous</span></td>
+                <td><strong>RAN RCA + LAG<br />remediation</strong></td>
+                <td>SOC Agent</td>
+                <td>28 5G RAN sites ·<br />KPI validation</td>
+                <td><span className="auth-badge auth-auto"><i></i>Autonomous</span></td>
               </tr>
               <tr>
-                <td>Multi-channel all-clear</td><td>Notification Agent</td><td>12,000 consumers + 47 enterprise</td>
-                <td><span className="auth-badge auth-human">⚠ Operator Approved</span></td>
+                <td><strong>Multi-channel all-<br />clear</strong></td>
+                <td>Notification<br />Agent</td>
+                <td>12,000 consumers<br />+ 47 enterprise</td>
+                <td><span className="auth-badge auth-human"><i></i>Operator Approved</span></td>
               </tr>
               <tr>
-                <td>Per-segment compensation</td><td>Promotion Agent</td><td>$3.56M envelope · under $4M cap</td>
-                <td><span className="auth-badge auth-auto">● Policy Auto-approved</span></td>
+                <td><strong>Per-segment<br />compensation</strong></td>
+                <td>Promotion<br />Agent</td>
+                <td>$3.56M envelope ·<br />under $4M cap</td>
+                <td><span className="auth-badge auth-auto"><i></i>Policy Auto-approved</span></td>
               </tr>
               <tr>
-                <td>FCC NORS escalation</td><td>Analytics Agent</td><td>75% of 900K user-min threshold</td>
-                <td><span className="auth-badge auth-human">⚠ Watch</span></td>
+                <td><strong>FCC NORS<br />escalation</strong></td>
+                <td>Analytics<br />Agent</td>
+                <td>75% of 900K<br />user-min<br />threshold</td>
+                <td><span className="auth-badge auth-human"><i></i>Watch</span></td>
               </tr>
             </tbody>
           </table>
-        </div>
+        </section>
 
-        {/* Compensation Guardrails */}
-        <div className="card gov-card">
-          <div className="gov-card-title"><span>💰</span> Compensation Guardrails</div>
+        <section className="card gov-card gov-guardrail-card">
+          <div className="gov-card-title">Compensation Guardrails</div>
           <div className="comp-meter">
             <div className="comp-meter-head"><span className="comp-meter-lbl">Projected Compensation Envelope</span><span className="comp-meter-val">$3.56M / $4M</span></div>
             <div className="comp-track"><div className="comp-fill warn" style={{width: '89%'}}></div></div>
@@ -956,84 +981,81 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <div className="comp-track"><div className="comp-fill safe" style={{width: '72%'}}></div></div>
           </div>
           <div className="comp-flags">
-            <div className="comp-flag ok"><span className="comp-flag-ico">✅</span><span>INC-20234 — Creator Boost, Roam & Recover, and Family Care approved · within Incident Comp Policy v3.2</span></div>
-            <div className="comp-flag ok"><span className="comp-flag-ico">✅</span><span>Projected spend $3.56M · 98,436 expected redemptions · redemption tracking live after CareX/SMS publish</span></div>
+            <div className="comp-flag ok"><span className="comp-flag-ico">✓</span><span><strong>INC-20234</strong> — Creator Boost, Roam & Recover, and Family Care approved · within Incident Comp Policy v3.2</span></div>
+            <div className="comp-flag ok"><span className="comp-flag-ico">✓</span><span>Projected spend <strong>$3.56M</strong> · 98,436 expected redemptions · redemption tracking live after CareX/SMS publish</span></div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* ROW 3: Policy Compliance + Audit Trail */}
-      <div className="gov-grid2">
-
-        {/* Policy Compliance */}
-        <div className="card gov-card">
-          <div className="gov-card-title"><span>📋</span> Policy Compliance Status</div>
+        <section className="card gov-card gov-policy-card">
+          <div className="gov-card-title">Policy Compliance Status</div>
           <div className="policy-list">
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">NET-AUTO-01 · Self-healing LAG config push validated across 28 RAN sites</div><div className="policy-status g">Compliant</div>
+            <div className="policy-row">
+              <div className="policy-dot g"></div><div className="policy-name"><strong>NET-AUTO-01</strong> · Self-healing LAG config push validated across 28 RAN sites</div><div className="policy-status g">Compliant</div>
             </div>
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">RCA-LAG-01 · BDN-PE01 xe-0/0/1 added to ae1 and LACP confirmed</div><div className="policy-status g">Compliant</div>
+            <div className="policy-row">
+              <div className="policy-dot g"></div><div className="policy-name"><strong>RCA-LAG-01</strong> · BDN-PE01 xe-0/0/1 added to ae1 and LACP confirmed</div><div className="policy-status g">Compliant</div>
             </div>
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">CX-NOTIF-01 · Outage and all-clear sent by SMS, push, and in-app</div><div className="policy-status g">Compliant</div>
+            <div className="policy-row">
+              <div className="policy-dot g"></div><div className="policy-name"><strong>CX-NOTIF-01</strong> · Outage and all-clear sent by SMS, push, and in-app</div><div className="policy-status g">Compliant</div>
             </div>
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">TCPA-STOP-01 · Service-message exemption applied and 38 STOP opt-outs suppressed</div><div className="policy-status g">Compliant</div>
+            <div className="policy-row">
+              <div className="policy-dot g"></div><div className="policy-name"><strong>TCPA-STOP-01</strong> · Service-message exemption applied and 38 STOP opt-outs suppressed</div><div className="policy-status g">Compliant</div>
             </div>
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot g"></div><div className="policy-name">COMP-POLICY-3.2 · $3.56M compensation package within $4M cap</div><div className="policy-status g">Compliant</div>
+            <div className="policy-row">
+              <div className="policy-dot g"></div><div className="policy-name"><strong>COMP-POLICY-3.2</strong> · $3.56M compensation package within $4M cap</div><div className="policy-status g">Compliant</div>
             </div>
-            <div className="policy-row" style={{background: 'var(--bg)', borderRadius: '7px', padding: '8px 10px'}}>
-              <div className="policy-dot a"></div><div className="policy-name">REG-NORS-01 · FCC NORS exposure monitored at 612K user-minutes</div><div className="policy-status a">Watch</div>
+            <div className="policy-row">
+              <div className="policy-dot a"></div><div className="policy-name"><strong>REG-NORS-01</strong> · FCC NORS exposure monitored at 612K user-minutes</div><div className="policy-status a">Watch</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Regulatory Audit Trail */}
-        <div className="card gov-card">
-          <div className="gov-card-title"><span>📁</span> Regulatory Audit Trail</div>
-          <div>
+        <section className="card gov-card gov-audit-card">
+          <div className="gov-card-title gov-card-title-row">
+            <span>Regulatory Audit Trail</span>
+            <a className="gov-download-btn" href="/maxim-audit-INC-20234.txt" download="maxim-audit-INC-20234.txt" aria-label="Download audit report">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+            </a>
+          </div>
+          <div className="audit-list">
             <div className="audit-row">
-              <span className="audit-time">16:00:00</span>
+              <span className="audit-time">09:41:22</span>
               <span className="audit-agent">SOC Agent</span>
               <span className="audit-action">INC-20234 detected — Trafford Metro 5G RAN · 28 sites · ~12,000 subs</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:35</span>
               <span className="audit-agent">Analytics Agent</span>
               <span className="audit-action">Business impact sized · $501K revenue at risk · 47 enterprise SLA accounts · NORS 612K</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:41:48</span>
               <span className="audit-agent">Notification Agent</span>
               <span className="audit-action">Outage comms sent · 12,000 SMS · 99.2% delivery · 38 STOP opt-outs</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:43:10</span>
               <span className="audit-agent">SOC Agent</span>
               <span className="audit-action">LAG fix pushed · BDN-PE01 xe-0/0/1 → ae1 · traffic balancing ~50/50</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:46:02</span>
               <span className="audit-agent">Notification Agent</span>
               <span className="audit-action">All-clear sent · 12,000 consumers + 47 enterprise contacts · 99.1% SMS delivery</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
               <span className="audit-time">09:48:20</span>
               <span className="audit-agent">Promotion Agent</span>
               <span className="audit-action">Bundles published · $3.56M envelope · 98,436 expected redemptions · Policy v3.2</span>
-              <span className="audit-type auto">Auto</span>
+              <span className="audit-type">AUTO</span>
             </div>
           </div>
-          <button className="export-btn" type="button">Download Audit Report</button>
-        </div>
-
+        </section>
       </div>
     </div>
 
