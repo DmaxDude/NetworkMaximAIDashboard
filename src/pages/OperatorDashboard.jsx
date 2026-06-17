@@ -77,7 +77,7 @@ const reportIssues = [
     zone: 'Trafford',
     type: 'Service Degradation',
     severity: 'High',
-    status: 'Active',
+    status: 'Resolved',
     rootCause: 'Incomplete LAG bundle on BDN-PE01 after transport failover',
     usersImpacted: 12000,
     sites: 28,
@@ -229,7 +229,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [isSimRunning, setIsSimRunning] = useState(false)
   const [showIncNotif, setShowIncNotif] = useState(true)
   const [selectedReportIssueId, setSelectedReportIssueId] = useState(reportIssues[1].id)
-  const [inc20234Resolved, setInc20234Resolved] = useState(true)
+  const [inc20234Resolved, setInc20234Resolved] = useState(false)
   const timers = useRef([])
   const simulatorBodyRef = useRef(null)
   const simulatorStepRefs = useRef([])
@@ -253,6 +253,17 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     window.open(GREYSKIES_URL, '_blank', 'noopener,noreferrer')
   }
   const activeIssueCount = inc20234Resolved ? 2 : 3
+  const liveZoneStatus = {
+    ...GM_ZONE_STATUS,
+    Trafford: inc20234Resolved
+      ? {
+          status: 'good',
+          label: 'Healthy',
+          note: 'All systems nominal',
+          detail: 'All 28 sites restored',
+        }
+      : GM_ZONE_STATUS.Trafford,
+  }
 
   const scrollSimulatorToStep = (index) => {
     const body = simulatorBodyRef.current
@@ -491,7 +502,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                 <rect x="0" y="0" width={GM_MAP_WIDTH} height={GM_MAP_HEIGHT} fill="url(#gmLiveGrid)" />
                 <rect x="0" y="0" width={GM_MAP_WIDTH} height={GM_MAP_HEIGHT} fill="url(#gmLiveStageGlow)" />
                 {GM_GEO.boroughs.map((borough) => {
-                  const meta = GM_ZONE_STATUS[borough.name] || { status: 'good', label: 'Healthy', note: 'All systems nominal' }
+                  const meta = liveZoneStatus[borough.name] || { status: 'good', label: 'Healthy', note: 'All systems nominal' }
                   const color = GM_STATUS_COLOR[meta.status]
                   const dotX = borough.c[0] - 46
                   const labelX = borough.c[0] - 34
@@ -545,7 +556,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <div className="ch"><span className="ctitle">Zone Status</span></div>
               {[
                 ['r', 'Oldham', 'Escalated'],
-                ['r', 'Trafford', 'Active issue'],
+                [inc20234Resolved ? 'g' : 'r', 'Trafford', inc20234Resolved ? 'Healthy' : 'Active issue'],
                 ['a', 'Stockport', 'Degraded'],
                 ['g', 'Bolton', 'Healthy'],
                 ['g', 'Bury', 'Healthy'],
@@ -768,14 +779,13 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             </thead>
             <tbody>
               {reportIssues.map((issue) => {
-                const reportStatus = issue.id === 'INC-20234' && inc20234Resolved ? 'Resolved' : issue.status
                 return (
                   <tr key={issue.id} className={selectedReportIssue.id === issue.id ? 'selected' : ''} onClick={() => setSelectedReportIssueId(issue.id)}>
                     <td><strong>{issue.id}</strong></td>
                     <td>{issue.zone}</td>
                     <td>{issue.type}</td>
                     <td><span className={`report-sev ${issue.severity.toLowerCase()}`}>{issue.severity}</span></td>
-                    <td><span className={`report-status ${reportStatus.toLowerCase()}`}>{reportStatus}</span></td>
+                    <td><span className={`report-status ${issue.status.toLowerCase()}`}>{issue.status}</span></td>
                     <td>{issue.usersImpacted.toLocaleString()}</td>
                     <td>{issue.resolution}</td>
                     <td>{issue.usersCompClaimed.toLocaleString()}</td>
@@ -797,7 +807,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           <section className="card report-panel report-focus-card">
             <div className="report-card-head">
               <strong>{selectedReportIssue.id} · {selectedReportIssue.zone}</strong>
-              <span className="report-status active">Active</span>
+              <span className={`report-status ${selectedReportIssue.status.toLowerCase()}`}>{selectedReportIssue.status}</span>
             </div>
             <div className="report-focus-sub">{selectedReportIssue.type} · {selectedReportIssue.agent}</div>
             <div className="report-focus-body">
