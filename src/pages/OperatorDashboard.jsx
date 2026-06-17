@@ -110,7 +110,7 @@ const reportIssues = [
     rootCause: 'Microbursts on SKP-MW03 uplink saturating egress queues',
     usersImpacted: 6400,
     sites: 14,
-    resolution: '42 min',
+    resolution: '1 hour',
     resolutionScore: 54,
     compensationClaimed: 33000,
     usersCompClaimed: 1740,
@@ -406,7 +406,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     </div>
     <div className={navClass('greyskies')} onClick={openGreySkies}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"></path></svg>
-      Grey Skies
+      GreySkies
       <svg className="nav-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg>
     </div>
     <div className={navClass('circles')} onClick={() => goTo('circles')}>
@@ -425,8 +425,21 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   </nav>
   <div className="sf">
     <div className="powered-by">Powered by :</div>
-    <div className="powered-logos" aria-label="Powered by GreySkies and Circles">
-      <img src="/powered-logo.png" alt="Powered by HCLTech, GreySkies and Circles" />
+    <div className="powered-logos" aria-label="Powered by GreySkies, Circles, and HCLTech">
+      <div className="plogo-row center">
+        <svg className="plogo plogo-hcl" viewBox="0 4.5 53 11" preserveAspectRatio="xMidYMid meet" role="img" aria-label="HCLTech">
+          <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
+        </svg>
+      </div>
+      <div className="plogo-row">
+        <svg className="plogo plogo-greyskies" viewBox="65 1.5 81 17" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GreySkies">
+          <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
+        </svg>
+        <span className="plogo-sep"></span>
+        <svg className="plogo plogo-circles" viewBox="158 2.5 60 15" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Circles">
+          <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
+        </svg>
+      </div>
     </div>
     <div className="user">
       <div className="av">AS</div>
@@ -896,9 +909,9 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <path className="area" d="M64 212 C82 204 92 190 104 170 C130 124 160 86 208 76 C256 66 300 82 346 104 C398 129 438 153 492 170 C535 184 574 191 604 195 L604 212 L64 212 Z" />
               <path className="line" d="M64 212 C82 204 92 190 104 170 C130 124 160 86 208 76 C256 66 300 82 346 104 C398 129 438 153 492 170 C535 184 574 191 604 195" />
               <circle className="peak" cx="208" cy="76" r="5" />
-              <text className="peak-label" x="184" y="60">Peak 70</text>
+              <text className="peak-label" x="184" y="60">Peak 93</text>
               <text className="x-label" x="64" y="238">Detected</text>
-              <text className="x-label end" x="604" y="238">Recovered · 42 min</text>
+              <text className="x-label end" x="604" y="238">Recovered · 1 hour</text>
             </svg>
           </section>
 
@@ -1027,43 +1040,43 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         <section className="card gov-card gov-audit-card">
           <div className="gov-card-title gov-card-title-row">
             <span>Regulatory Audit Trail</span>
-            <a className="gov-download-btn" href="/maxim-audit-INC-20234.txt" download="maxim-audit-INC-20234.txt" aria-label="Download audit report">
+            <a className="gov-download-btn" href="/maxim-audit-INC-20234.xlsx" download="maxim-audit-INC-20234.xlsx" aria-label="Download audit report">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
             </a>
           </div>
           <div className="audit-list">
             <div className="audit-row">
-              <span className="audit-time">09:41:22</span>
+              <span className="audit-time">16:02:22</span>
               <span className="audit-agent">SOC Agent</span>
               <span className="audit-action">INC-20234 detected — Trafford Metro 5G RAN · 28 sites · ~12,000 subs</span>
               <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:41:35</span>
+              <span className="audit-time">16:12:35</span>
               <span className="audit-agent">Analytics Agent</span>
               <span className="audit-action">Business impact sized · $501K revenue at risk · 47 enterprise SLA accounts · NORS 612K</span>
               <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:41:48</span>
+              <span className="audit-time">16:16:48</span>
               <span className="audit-agent">Notification Agent</span>
               <span className="audit-action">Outage comms sent · 12,000 SMS · 99.2% delivery · 38 STOP opt-outs</span>
               <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:43:10</span>
+              <span className="audit-time">16:30:10</span>
               <span className="audit-agent">SOC Agent</span>
               <span className="audit-action">LAG fix pushed · BDN-PE01 xe-0/0/1 → ae1 · traffic balancing ~50/50</span>
               <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:46:02</span>
+              <span className="audit-time">16:46:02</span>
               <span className="audit-agent">Notification Agent</span>
               <span className="audit-action">All-clear sent · 12,000 consumers + 47 enterprise contacts · 99.1% SMS delivery</span>
               <span className="audit-type">AUTO</span>
             </div>
             <div className="audit-row">
-              <span className="audit-time">09:48:20</span>
+              <span className="audit-time">16:48:20</span>
               <span className="audit-agent">Promotion Agent</span>
               <span className="audit-action">Bundles published · $3.56M envelope · 98,436 expected redemptions · Policy v3.2</span>
               <span className="audit-type">AUTO</span>

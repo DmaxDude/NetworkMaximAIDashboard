@@ -15,8 +15,7 @@
 .operator-page .app-name{color:#fff;font-size:24px;font-weight:700;letter-spacing:-1px;}
 .operator-page .app-tag{color:rgba(255,255,255,.28);font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
 .operator-page .powered-by{color:rgba(255,255,255,.42);font-size:10px;font-weight:600;margin-top:15px;}
-.operator-page .powered-logos{display:flex;align-items:center;margin-top:8px;}
-.operator-page .powered-logos img{display:block;width:100%;max-width:100%;height:auto;object-fit:contain;}
+.operator-page .powered-logos{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;}
 .operator-page nav{padding:14px 10px;flex:1;}
 .operator-page .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;
   color:rgba(255,255,255,.45);font-size:13px;font-weight:500;margin-bottom:2px;transition:all .15s;}
@@ -93,8 +92,15 @@
 .operator-page .sf{padding:16px 0 20px;border-top:1px solid rgba(255,255,255,.14);}
 .operator-page .powered-by{color:#9fb2cf;font-size:10px;font-weight:700;line-height:1.35;margin:0 0px 12px;}
 .operator-page .powered-by strong{color:#c8d5e8;}
-.operator-page .powered-logos{margin:0 0px 14px;opacity:.95;}
-.operator-page .powered-logos img{width:100%;filter:none;}
+.operator-page .powered-logos{margin:0 0px 14px; overflow: hidden; opacity:.95;}
+.operator-page .plogo-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;}
+.operator-page .plogo-row.center{justify-content:center;}
+.operator-page .plogo{display:block;flex:0 0 auto;height:auto;overflow:hidden;}
+.operator-page .plogo image{display:block;}
+.operator-page .plogo-hcl{width:70px;height:24px;}
+.operator-page .plogo-greyskies{width:98px;height:26px;}
+.operator-page .plogo-circles{width:80px;height:25px;}
+.operator-page .plogo-sep{width:1px;height:20px;background:rgba(200,213,232,.45);flex:0 0 auto;}
 .operator-page .user{height:64px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.08);padding:11px 12px;gap:10px;}
 .operator-page .av{width:43px;height:43px;border-radius:11px;background:linear-gradient(135deg,#2d86ff,#2ccce6);font-size:17px;}
 .operator-page .uname{font-size:12px;font-weight:900;}
