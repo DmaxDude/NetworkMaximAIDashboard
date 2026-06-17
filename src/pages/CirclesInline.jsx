@@ -347,15 +347,42 @@ const UPTAKE_ROWS = [
   ['Family Care', 'Elena', 'Recommended - per-line credit drives highest absolute redemption.', '78%', '54,59 / 69,99', '$5K', '686 tickets', '1,120', '$3.30M'],
 ]
 
-const CANNED = {
-  comms: 'Recommend sending an SMS advisory to impacted subscribers, plus an internal ops alert for service desk and field crew status updates. Keep messages concise and include expected restoration window.',
-}
+const ELENA_FAMILY_CARE_SMS = [
+  '[NOVA] Tailored for Family Planners',
+  'Family Care:',
+  '$25 bill credit across all lines',
+  '+ 6 months Disney',
+  '+ Bundle for the household',
+].join('\n')
 
 const SUGGESTIONS = [
   { label: "What's the business impact of this degradation?", key: 'business' },
   { label: 'How long will it take to restore?', key: 'restore' },
   { label: 'Send comms to all the customers right away informing them about the outage', key: 'comms' },
 ]
+
+const MANUAL_PROMPTS = {
+  eta: 'what is the ETA for restoration?',
+  comms: 'send comms to impacted customers',
+  approve: 'approve',
+  close: 'Thank you. Let\u2019s close the issue now.',
+}
+
+const NEXT_MANUAL_ACTION_BY_RESPONSE = {
+  'business-response': 'eta',
+  'restore-response': 'comms',
+  'comms-response': 'approve-outage',
+  'restoration-comms-response': 'approve-restoration',
+  'compensation-rollout-response': 'close',
+}
+
+const MANUAL_ACTION_LABELS = {
+  eta: MANUAL_PROMPTS.eta,
+  comms: MANUAL_PROMPTS.comms,
+  'approve-outage': MANUAL_PROMPTS.approve,
+  'approve-restoration': MANUAL_PROMPTS.approve,
+  close: MANUAL_PROMPTS.close,
+}
 
 const PERSONAS = [
   {
@@ -413,6 +440,7 @@ export default function CirclesInline({ onResolveIncident }) {
   const [compensationRolledOut, setCompensationRolledOut] = useState(false)
   const [activatedBundles, setActivatedBundles] = useState({})
   const [showCompensationAction, setShowCompensationAction] = useState(false)
+  const [manualAction, setManualAction] = useState(null)
   const [compSelections, setCompSelections] = useState({ creators: 'reco', travellers: 'reco', families: 'reco' })
   const chatEndRef = useRef(null)
   const timers = useRef([])
@@ -427,6 +455,7 @@ export default function CirclesInline({ onResolveIncident }) {
   }
 
   const runAgentSequence = (userLabel, agentSet = AGENTS, responseType = 'business-response') => {
+    setManualAction(null)
     addMsg({ type: 'user', text: userLabel })
     addMsg({ type: 'agents', agentSet, responseType })
     setAgentPhase(0)
@@ -448,6 +477,7 @@ export default function CirclesInline({ onResolveIncident }) {
         }
         return next
       })
+      setManualAction(NEXT_MANUAL_ACTION_BY_RESPONSE[responseType] || null)
       scrollDown()
     }, agentSet.length * stepMs + 600)
     timers.current.push(...newTimers, done)
@@ -466,12 +496,54 @@ export default function CirclesInline({ onResolveIncident }) {
     }
   }
 
+  const handleApprove = (text = MANUAL_PROMPTS.approve) => {
+    setSuggestionsDismissed(true)
+    setManualAction(null)
+    if (restoredActionDone) {
+      runAgentSequence(text, RESTORATION_DISPATCH_AGENTS, 'restoration-dispatch-response')
+      const stepMs = Math.round(4200 / RESTORATION_DISPATCH_AGENTS.length)
+      const doneMs = RESTORATION_DISPATCH_AGENTS.length * stepMs + 700
+      const phoneTimer = setTimeout(() => {
+        setAllClearDispatched(true)
+        setPhoneState('restored')
+      }, doneMs)
+      const followUpTimer = setTimeout(() => {
+        setMessages((m) => [...m, { type: 'compensation-prompt' }])
+        setShowCompensationAction(true)
+        setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
+      }, doneMs + 700)
+      timers.current.push(phoneTimer, followUpTimer)
+    } else {
+      runAgentSequence(text, APPROVE_AGENTS, 'approve-response')
+      const stepMs = Math.round(4200 / APPROVE_AGENTS.length)
+      const outageMs = APPROVE_AGENTS.length * stepMs + 650
+      const followUpMs = outageMs + 3200
+      const ot = setTimeout(() => setPhoneState('outage'), outageMs)
+      const ft = setTimeout(() => {
+        setMessages((m) => [...m, { type: 'restored-alert' }])
+        setShowRestoredAction(true)
+        setPhoneState('restored')
+        setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
+      }, followUpMs)
+      timers.current.push(ot, ft)
+    }
+  }
+
+  const closeIssue = (text = MANUAL_PROMPTS.close) => {
+    setSuggestionsDismissed(true)
+    setManualAction(null)
+    addMsg({ type: 'user', text })
+    addMsg({ type: 'assistant', text: 'Sure. The issue has been closed and the ticket #20234 has been marked resolved.' })
+    onResolveIncident?.('INC-20234')
+  }
+
   const handleSend = () => {
     if (!inputValue.trim()) return
     setSuggestionsDismissed(true)
     const text = inputValue.trim()
     const lower = text.toLowerCase()
     setInputValue('')
+    setManualAction(null)
     if (lower.includes('eta') || lower.includes('restor') || lower.includes('how long')) {
       runAgentSequence(text, RESTORE_AGENTS, 'restore-response')
     } else if (lower.includes('business impact') || lower.includes('revenue') || lower.includes('damage')) {
@@ -479,41 +551,26 @@ export default function CirclesInline({ onResolveIncident }) {
     } else if (lower.includes('comm') || lower.includes('sms') || lower.includes('notif') || lower.includes('customer')) {
       runAgentSequence(text, COMMS_AGENTS, 'comms-response')
     } else if (lower.trim() === 'approve' || lower.includes('approve')) {
-      if (restoredActionDone) {
-        runAgentSequence(text, RESTORATION_DISPATCH_AGENTS, 'restoration-dispatch-response')
-        const stepMs = Math.round(4200 / RESTORATION_DISPATCH_AGENTS.length)
-        const doneMs = RESTORATION_DISPATCH_AGENTS.length * stepMs + 700
-        const phoneTimer = setTimeout(() => {
-          setAllClearDispatched(true)
-          setPhoneState('restored')
-        }, doneMs)
-        const followUpTimer = setTimeout(() => {
-          setMessages((m) => [...m, { type: 'compensation-prompt' }])
-          setShowCompensationAction(true)
-          setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
-        }, doneMs + 700)
-        timers.current.push(phoneTimer, followUpTimer)
-      } else {
-        runAgentSequence(text, APPROVE_AGENTS, 'approve-response')
-        const stepMs = Math.round(4200 / APPROVE_AGENTS.length)
-        const outageMs = APPROVE_AGENTS.length * stepMs + 650
-        const followUpMs = outageMs + 3200
-        const ot = setTimeout(() => setPhoneState('outage'), outageMs)
-        const ft = setTimeout(() => {
-          setMessages((m) => [...m, { type: 'restored-alert' }])
-          setShowRestoredAction(true)
-          setPhoneState('restored')
-          setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
-        }, followUpMs)
-        timers.current.push(ot, ft)
-      }
+      handleApprove(text)
     } else if ((lower.includes('thankyou') || lower.includes('thank you')) && lower.includes('close') && lower.includes('issue')) {
-      addMsg({ type: 'user', text })
-      addMsg({ type: 'assistant', text: 'Sure. The issue has been closed and the ticket #20234 has been marked resolved.' })
-      onResolveIncident?.('INC-20234')
+      closeIssue(text)
     } else {
       addMsg({ type: 'user', text })
       addMsg({ type: 'assistant', text: 'Thanks — checking the latest network impact and will update you shortly.' })
+    }
+  }
+
+  const handleManualPromptAction = () => {
+    if (manualAction === 'eta') {
+      setSuggestionsDismissed(true)
+      runAgentSequence(MANUAL_PROMPTS.eta, RESTORE_AGENTS, 'restore-response')
+    } else if (manualAction === 'comms') {
+      setSuggestionsDismissed(true)
+      runAgentSequence(MANUAL_PROMPTS.comms, COMMS_AGENTS, 'comms-response')
+    } else if (manualAction === 'approve-outage' || manualAction === 'approve-restoration') {
+      handleApprove(MANUAL_PROMPTS.approve)
+    } else if (manualAction === 'close') {
+      closeIssue(MANUAL_PROMPTS.close)
     }
   }
 
@@ -561,6 +618,7 @@ export default function CirclesInline({ onResolveIncident }) {
     if (activatedBundles.raj && row[1] === 'Raj') return ['Roam & Recover', 'Raj', row[2], '74%', '19,083 / 25,788', row[5], row[6], row[7], row[8], true]
     return [...row, false]
   })
+  const manualActionLabel = manualAction ? MANUAL_ACTION_LABELS[manualAction] : null
 
   const activateBundle = () => {
     if (!promoCard) return
@@ -1086,6 +1144,14 @@ export default function CirclesInline({ onResolveIncident }) {
         </div>
         )}
 
+        {manualActionLabel && (
+        <div className="gs-sugg-row">
+          <button type="button" className="gs-sugg-card gs-sugg-action" onClick={handleManualPromptAction}>
+            {manualActionLabel}
+          </button>
+        </div>
+        )}
+
         <div className="gs-input-wrap">
           <div className="gs-input-row">
             <input
@@ -1189,6 +1255,13 @@ export default function CirclesInline({ onResolveIncident }) {
                     {allClearDispatched && (
                       <div className="gs-sms-bubble">
                         [NOVA] Good news - service in your area is fully restored. Thanks for your patience.
+                      </div>
+                    )}
+                    {compensationRolledOut && selectedPersona === 'elena' && (
+                      <div className="gs-sms-bubble" style={{ whiteSpace: 'pre-line' }}>
+                        {ELENA_FAMILY_CARE_SMS}
+                        <br />
+                        Click to activate
                       </div>
                     )}
                   </div>
