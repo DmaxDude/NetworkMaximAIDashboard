@@ -545,7 +545,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <div className="ch"><span className="ctitle">Zone Status</span></div>
               {[
                 ['r', 'Oldham', 'Escalated'],
-                [inc20234Resolved ? 'g' : 'r', 'Trafford', inc20234Resolved ? 'Healthy' : 'Active issue'],
+                ['r', 'Trafford', 'Active issue'],
                 ['a', 'Stockport', 'Degraded'],
                 ['g', 'Bolton', 'Healthy'],
                 ['g', 'Bury', 'Healthy'],
