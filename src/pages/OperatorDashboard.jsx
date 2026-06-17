@@ -768,6 +768,13 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
     {/* REPORTS */}
     <div className={pageClass('reports')} id="page-reports">
       <div className="reports-page">
+        <div className="report-kpi-grid">
+          <div className="card report-kpi report-kpi-red"><span>Users Impacted</span><strong>{reportTotals.usersImpacted.toLocaleString()}</strong><em>Across {reportTotals.sites} OSS sites</em></div>
+          <div className="card report-kpi report-kpi-amber"><span>Compensation Claimed</span><strong>${Math.round(reportTotals.compensationClaimed / 1000)}<small>K</small></strong><em>{reportTotals.usersCompClaimed.toLocaleString()} users claimed</em></div>
+          <div className="card report-kpi report-kpi-green"><span>Claim Rate</span><strong>{avgClaimRate}<small>%</small></strong><em>BSS uptake average</em></div>
+          <div className="card report-kpi report-kpi-red"><span>Revenue At Risk</span><strong>${Math.round(reportTotals.revenueAtRisk / 1000)}<small>K</small></strong><em>OSS + BSS exposure</em></div>
+        </div>
+
         <section className="card report-issue-table">
           <div className="report-table-title">
             <div><strong>Issues</strong><span>click an issue to update the report dashboard</span></div>
@@ -796,13 +803,6 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           </table>
         </section>
 
-        <div className="report-kpi-grid">
-          <div className="card report-kpi report-kpi-red"><span>Users Impacted</span><strong>{reportTotals.usersImpacted.toLocaleString()}</strong><em>Across {reportTotals.sites} OSS sites</em></div>
-          <div className="card report-kpi report-kpi-amber"><span>Compensation Claimed</span><strong>${Math.round(reportTotals.compensationClaimed / 1000)}<small>K</small></strong><em>{reportTotals.usersCompClaimed.toLocaleString()} users claimed</em></div>
-          <div className="card report-kpi report-kpi-green"><span>Claim Rate</span><strong>{avgClaimRate}<small>%</small></strong><em>BSS uptake average</em></div>
-          <div className="card report-kpi report-kpi-red"><span>Revenue At Risk</span><strong>${Math.round(reportTotals.revenueAtRisk / 1000)}<small>K</small></strong><em>OSS + BSS exposure</em></div>
-        </div>
-
         <div className="report-primary-grid">
           <section className="card report-panel report-focus-card">
             <div className="report-card-head">
@@ -816,8 +816,12 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
               <div className="report-focus-metric"><span>Compensation Claimed</span><strong>${Math.round(selectedReportIssue.compensationClaimed / 1000)}K</strong></div>
               <div className="report-focus-metric"><span>Users Claimed Comp</span><strong>{selectedReportIssue.usersCompClaimed.toLocaleString()}</strong></div>
             </div>
-            <div className="report-root"><span>Root Cause</span><p>{selectedReportIssue.rootCause}</p></div>
-            <div className="report-root"><span>Recommended Action</span><p>{selectedReportIssue.recommendation}</p></div>
+            {selectedReportIssue.id !== 'INC-2039' && (
+              <>
+                <div className="report-root"><span>Root Cause</span><p>{selectedReportIssue.rootCause}</p></div>
+                <div className="report-root"><span>Recommended Action</span><p>{selectedReportIssue.recommendation}</p></div>
+              </>
+            )}
           </section>
 
           <section className="card report-panel">
