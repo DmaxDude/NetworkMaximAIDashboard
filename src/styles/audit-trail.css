@@ -1,6 +1,6 @@
 
 .audit-page *{margin:0;padding:0;box-sizing:border-box;}
-.audit-page{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FC;}
+.audit-page{font-family:var(--font-ui);background:#F5F7FC;}
 .audit-page .app{display:flex;height:100vh;min-height:700px;}
 .audit-page .sidebar{width:210px;background:#001233;display:flex;flex-direction:column;flex-shrink:0;}
 .audit-page .brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -21,7 +21,7 @@
 .audit-page .tb-title{font-size:14px;font-weight:700;color:#0D1B2A;}
 .audit-page .tb-sub{font-size:10px;color:#6B7A90;margin-top:1px;}
 .audit-page .tb-right{display:flex;align-items:center;gap:10px;}
-.audit-page .clk{font-family:monospace;font-size:11px;color:#6B7A90;}
+.audit-page .clk{font-family:var(--font-mono);font-size:11px;color:#6B7A90;}
 .audit-page .sim-btn{display:flex;align-items:center;gap:6px;background:#0053D6;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;}
 .audit-page .blink{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -29,13 +29,13 @@
 .audit-page .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
 .audit-page .kpi{background:#fff;border-radius:10px;border:1px solid #E4E9F2;padding:14px 16px;}
 .audit-page .kpi-lbl{font-size:9px;color:#6B7A90;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
-.audit-page .kpi-val{font-family:monospace;font-size:24px;font-weight:700;}
+.audit-page .kpi-val{font-family:var(--font-mono);font-size:24px;font-weight:700;}
 .audit-page .kpi-note{font-size:9px;color:#6B7A90;margin-top:2px;}
 .audit-page .cb{color:#0053D6;}.audit-page .cg{color:#00A86B;}.audit-page .ca{color:#F59E0B;}
 .audit-page .gscore{display:flex;align-items:center;gap:10px;}
 .audit-page .ring-wrap{position:relative;width:44px;height:44px;flex-shrink:0;}
 .audit-page .ring-wrap svg{transform:rotate(-90deg);}
-.audit-page .ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;font-weight:700;color:#00A86B;}
+.audit-page .ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:700;color:#00A86B;}
 .audit-page .sec-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
 .audit-page .sec-title{font-size:14px;font-weight:700;color:#0D1B2A;}
 .audit-page .sec-sub{font-size:10px;color:#6B7A90;margin-top:2px;}
@@ -53,15 +53,15 @@
 .audit-page td{padding:10px 12px;font-size:11px;border-bottom:1px solid #E4E9F2;vertical-align:top;}
 .audit-page tr:last-child td{border-bottom:none;}
 .audit-page tr:hover td{background:#F9FAFB;}
-.audit-page .inc-id{font-family:monospace;font-size:10px;font-weight:700;color:#0053D6;}
-.audit-page .ts{font-family:monospace;font-size:10px;color:#6B7A90;}
+.audit-page .inc-id{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#0053D6;}
+.audit-page .ts{font-family:var(--font-mono);font-size:10px;color:#6B7A90;}
 .audit-page .agent-nm{font-size:10px;font-weight:600;color:#0D1B2A;}
 .audit-page .agent-sub{font-size:9px;color:#6B7A90;margin-top:1px;}
 .audit-page .action-txt{font-size:11px;color:#0D1B2A;}
 .audit-page .action-detail{font-size:9px;color:#6B7A90;margin-top:2px;line-height:1.4;}
 .audit-page .policy-ref{font-size:9px;font-weight:700;color:#0053D6;background:#E8F0FF;border-radius:3px;padding:1px 5px;margin-top:3px;display:inline-block;margin-right:3px;}
-.audit-page .conf-hi{font-family:monospace;font-size:10px;font-weight:700;color:#00A86B;}
-.audit-page .conf-md{font-family:monospace;font-size:10px;font-weight:700;color:#F59E0B;}
+.audit-page .conf-hi{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#00A86B;}
+.audit-page .conf-md{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#F59E0B;}
 .audit-page .tb{border-radius:3px;font-size:9px;font-weight:700;padding:2px 6px;display:inline-flex;align-items:center;gap:3px;}
 .audit-page .t-auto{background:#E6F7F1;color:#005A35;}
 .audit-page .t-human{background:#FEF9EE;color:#7A5200;}

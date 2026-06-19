@@ -219,6 +219,99 @@ const reportIssues = [
   },
 ]
 
+const ReportHeaderIcon = ({ tone }) => (
+  <span className={`report-head-icon ${tone}`} aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <path d="M7 17 17 7" />
+      <path d="M9 7h8v8" />
+    </svg>
+  </span>
+)
+
+const ReportMetricIcon = ({ type }) => {
+  if (type === 'time') {
+    return (
+      <i className="report-focus-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8.2" />
+          <path d="M12 7.6v4.9h4.1" />
+        </svg>
+      </i>
+    )
+  }
+
+  if (type === 'compensation') {
+    return (
+      <i className="report-focus-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8.2" />
+          <path d="M12 7.4v9.2" />
+          <path d="M15.1 9.2c-.62-.67-1.55-1.03-2.72-1.03-1.52 0-2.62.72-2.62 1.9 0 1.26 1.1 1.72 2.62 2.04 1.6.34 2.84.78 2.84 2.15 0 1.18-1.1 1.95-2.8 1.95-1.28 0-2.35-.43-3.15-1.2" />
+        </svg>
+      </i>
+    )
+  }
+
+  if (type === 'claims') {
+    return (
+      <i className="report-focus-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 3.8h7.2l3.8 3.8v12.6H7Z" />
+          <path d="M14.2 3.8v3.8H18" />
+          <path d="M9.8 11h5.3" />
+          <path d="M9.8 14.1h5.3" />
+          <path d="M9.8 17.2h3.3" />
+        </svg>
+      </i>
+    )
+  }
+
+  return (
+    <i className="report-focus-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <circle cx="9" cy="8.2" r="3.1" />
+        <path d="M3.8 18.6c.32-3.14 2.23-5.05 5.2-5.05s4.88 1.91 5.2 5.05" />
+        <path d="M15.3 7.4a2.5 2.5 0 0 1 0 4.85" />
+        <path d="M16.5 14c2.16.55 3.47 2.08 3.72 4.6" />
+      </svg>
+    </i>
+  )
+}
+
+const ReportSegmentIcon = ({ name }) => {
+  const segment = name.toLowerCase()
+
+  if (segment.includes('roam')) {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3.5 18.3 6v5.05c0 4-2.5 7.63-6.3 9.35-3.8-1.72-6.3-5.35-6.3-9.35V6L12 3.5Z" />
+        <path d="M12 7.7v7" />
+        <path d="M8.55 11.2h6.9" />
+      </svg>
+    )
+  }
+
+  if (segment.includes('family')) {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 20.2C8.18 16.98 5.25 14.35 5.25 10.92A3.62 3.62 0 0 1 8.9 7.28c1.35 0 2.42.68 3.1 1.6.68-.92 1.75-1.6 3.1-1.6a3.62 3.62 0 0 1 3.65 3.64c0 3.43-2.93 6.06-6.75 9.28Z" />
+        <path d="M12 10.55v4.55" />
+        <path d="M9.72 12.82h4.56" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M13.7 4.4c2.05-.9 3.9-.9 5.72-.12.78 1.82.78 3.67-.12 5.72-.98 2.25-3.18 4.48-6.58 6.68l-5.4-5.4C9.52 7.88 11.75 5.68 13.7 4.4Z" />
+      <path d="M8 11.12 5.35 11.7 3.85 15.45l4.75-.82" />
+      <path d="M12.88 16l-.58 2.65-3.75 1.5.82-4.75" />
+      <path d="M5.95 18.05 4 20" />
+      <circle cx="15.65" cy="8.35" r="1.75" />
+    </svg>
+  )
+}
+
 export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [activePage, setActivePage] = useState(initialPage)
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false)
@@ -733,7 +826,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <div className="eca">Assigned → Raj Patel (NOC Team)</div>
           </div>
           <div style={{textAlign: 'right', flexShrink: '0'}}>
-            <div style={{fontSize: '11px', color: 'var(--muted)', fontFamily: '\'JetBrains Mono\',monospace'}}>09:18 AM</div>
+            <div style={{fontSize: '11px', color: 'var(--muted)', fontFamily: 'var(--font-mono)'}}>09:18 AM</div>
             <div style={{marginTop: '6px'}}><span className="pill es">⚡ Open</span></div>
           </div>
         </div>
@@ -745,7 +838,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <div className="eca">Handled by → Maria Chen (Field Ops)</div>
           </div>
           <div style={{textAlign: 'right', flexShrink: '0'}}>
-            <div style={{fontSize: '11px', color: 'var(--muted)', fontFamily: '\'JetBrains Mono\',monospace'}}>Yesterday</div>
+            <div style={{fontSize: '11px', color: 'var(--muted)', fontFamily: 'var(--font-mono)'}}>Yesterday</div>
             <div style={{marginTop: '6px'}}><span className="pill rs">✓ Closed</span></div>
           </div>
         </div>
@@ -833,15 +926,30 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         <div className="report-primary-grid">
           <section className="card report-panel report-focus-card">
             <div className="report-card-head">
-              <strong>{selectedReportIssue.id} · {selectedReportIssue.zone}</strong>
+              <span className="report-card-title">
+                <ReportHeaderIcon tone="incident" />
+                <strong>{selectedReportIssue.id} · {selectedReportIssue.zone}</strong>
+              </span>
               <span className={`report-status ${selectedReportIssue.status.toLowerCase()}`}>{selectedReportIssue.status}</span>
             </div>
             <div className="report-focus-sub">{selectedReportIssue.type} · {selectedReportIssue.agent}</div>
             <div className="report-focus-body">
-              <div className="report-focus-metric"><span>Users Impacted</span><strong>{selectedReportIssue.usersImpacted.toLocaleString()}</strong></div>
-              <div className="report-focus-metric"><span>Resolution Time</span><strong>{selectedReportIssue.resolution}</strong></div>
-              <div className="report-focus-metric"><span>Compensation Claimed</span><strong>${Math.round(selectedReportIssue.compensationClaimed / 1000)}K</strong></div>
-              <div className="report-focus-metric"><span>Users Claimed Comp</span><strong>{selectedReportIssue.usersCompClaimed.toLocaleString()}</strong></div>
+              <div className="report-focus-metric metric-users">
+                <ReportMetricIcon type="users" />
+                <div><span>Users Impacted</span><strong>{selectedReportIssue.usersImpacted.toLocaleString()}</strong></div>
+              </div>
+              <div className="report-focus-metric metric-time">
+                <ReportMetricIcon type="time" />
+                <div><span>Resolution Time</span><strong>{selectedReportIssue.resolution}</strong></div>
+              </div>
+              <div className="report-focus-metric metric-compensation">
+                <ReportMetricIcon type="compensation" />
+                <div><span>Compensation Claimed</span><strong>${Math.round(selectedReportIssue.compensationClaimed / 1000)}K</strong></div>
+              </div>
+              <div className="report-focus-metric metric-claims">
+                <ReportMetricIcon type="claims" />
+                <div><span>Users Claimed Comp</span><strong>{selectedReportIssue.usersCompClaimed.toLocaleString()}</strong></div>
+              </div>
             </div>
             {selectedReportIssue.id !== 'INC-2039' && (
               <>
@@ -852,7 +960,13 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           </section>
 
           <section className="card report-panel">
-            <div className="report-card-head"><strong>OSS Health</strong><b>{selectedReportIssue.ossHealth}%</b></div>
+            <div className="report-card-head">
+              <span className="report-card-title">
+                <ReportHeaderIcon tone="oss" />
+                <strong>OSS Health</strong>
+              </span>
+              <b className="report-value report-value-oss">{selectedReportIssue.ossHealth}%</b>
+            </div>
             <div className="report-panel-sub">Network symptoms and recovery pressure</div>
             <div className="report-bars">
               <div><span>Throughput drop</span><b>{selectedReportIssue.throughputDrop}%</b><i><em style={{width: '22%'}}></em></i></div>
@@ -863,7 +977,13 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
           </section>
 
           <section className="card report-panel">
-            <div className="report-card-head"><strong>BSS Impact</strong><b>{selectedReportIssue.bssHealth}%</b></div>
+            <div className="report-card-head">
+              <span className="report-card-title">
+                <ReportHeaderIcon tone="bss" />
+                <strong>BSS Impact</strong>
+              </span>
+              <b className="report-value report-value-bss">{selectedReportIssue.bssHealth}%</b>
+            </div>
             <div className="report-panel-sub">Customer care, claims, and revenue exposure</div>
             <div className="report-donut-row">
               <div className="report-donut" style={{'--p': `${selectedReportIssue.claimRate}%`}}><strong>{selectedReportIssue.claimRate}%</strong><span>claim rate</span></div>
@@ -933,7 +1053,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
             <div className="report-card-head"><strong>Compensation Mix</strong></div>
             <div className="report-panel-sub">Claims and spend by BSS segment</div>
             <div className="report-segments">
-              {selectedReportIssue.segments.map(([name, users, spend]) => <div key={name}><span>{name}</span><strong>{users.toLocaleString()} users</strong><b>${Math.round(spend / 1000)}K</b></div>)}
+              {selectedReportIssue.segments.map(([name, users, spend]) => <div key={name}><i className="report-segment-icon"><ReportSegmentIcon name={name} /></i><span>{name}</span><strong>{users.toLocaleString()} users</strong><b>${Math.round(spend / 1000)}K</b></div>)}
             </div>
           </section>
         </div>

@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Maxim — Regulatory Audit Trail</title>
 <style>
+@import url('public/fonts/hcltech-roobert.css');
+:root{--font-ui:'HCLTech Roobert',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-mono:'HCLTech Roobert',Consolas,'Liberation Mono',monospace;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FC;}
+body{font-family:var(--font-ui);background:#F5F7FC;}
 .app{display:flex;height:100vh;min-height:700px;}
 .sidebar{width:210px;background:#001233;display:flex;flex-direction:column;flex-shrink:0;}
 .brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -29,7 +31,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FC;}
 .tb-title{font-size:14px;font-weight:700;color:#0D1B2A;}
 .tb-sub{font-size:10px;color:#6B7A90;margin-top:1px;}
 .tb-right{display:flex;align-items:center;gap:10px;}
-.clk{font-family:monospace;font-size:11px;color:#6B7A90;}
+.clk{font-family:var(--font-mono);font-size:11px;color:#6B7A90;}
 .sim-btn{display:flex;align-items:center;gap:6px;background:#0053D6;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;}
 .blink{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -37,13 +39,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FC;}
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
 .kpi{background:#fff;border-radius:10px;border:1px solid #E4E9F2;padding:14px 16px;}
 .kpi-lbl{font-size:9px;color:#6B7A90;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
-.kpi-val{font-family:monospace;font-size:24px;font-weight:700;}
+.kpi-val{font-family:var(--font-mono);font-size:24px;font-weight:700;}
 .kpi-note{font-size:9px;color:#6B7A90;margin-top:2px;}
 .cb{color:#0053D6;}.cg{color:#00A86B;}.ca{color:#F59E0B;}
 .gscore{display:flex;align-items:center;gap:10px;}
 .ring-wrap{position:relative;width:44px;height:44px;flex-shrink:0;}
 .ring-wrap svg{transform:rotate(-90deg);}
-.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;font-weight:700;color:#00A86B;}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:700;color:#00A86B;}
 .sec-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
 .sec-title{font-size:14px;font-weight:700;color:#0D1B2A;}
 .sec-sub{font-size:10px;color:#6B7A90;margin-top:2px;}
@@ -61,15 +63,15 @@ th{background:#F5F7FC;padding:8px 12px;font-size:9px;text-transform:uppercase;le
 td{padding:10px 12px;font-size:11px;border-bottom:1px solid #E4E9F2;vertical-align:top;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#F9FAFB;}
-.inc-id{font-family:monospace;font-size:10px;font-weight:700;color:#0053D6;}
-.ts{font-family:monospace;font-size:10px;color:#6B7A90;}
+.inc-id{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#0053D6;}
+.ts{font-family:var(--font-mono);font-size:10px;color:#6B7A90;}
 .agent-nm{font-size:10px;font-weight:600;color:#0D1B2A;}
 .agent-sub{font-size:9px;color:#6B7A90;margin-top:1px;}
 .action-txt{font-size:11px;color:#0D1B2A;}
 .action-detail{font-size:9px;color:#6B7A90;margin-top:2px;line-height:1.4;}
 .policy-ref{font-size:9px;font-weight:700;color:#0053D6;background:#E8F0FF;border-radius:3px;padding:1px 5px;margin-top:3px;display:inline-block;margin-right:3px;}
-.conf-hi{font-family:monospace;font-size:10px;font-weight:700;color:#00A86B;}
-.conf-md{font-family:monospace;font-size:10px;font-weight:700;color:#F59E0B;}
+.conf-hi{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#00A86B;}
+.conf-md{font-family:var(--font-mono);font-size:10px;font-weight:700;color:#F59E0B;}
 .tb{border-radius:3px;font-size:9px;font-weight:700;padding:2px 6px;display:inline-flex;align-items:center;gap:3px;}
 .t-auto{background:#E6F7F1;color:#005A35;}
 .t-human{background:#FEF9EE;color:#7A5200;}
