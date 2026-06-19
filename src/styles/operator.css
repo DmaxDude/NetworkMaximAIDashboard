@@ -92,8 +92,9 @@
 .operator-page .sf{padding:16px 0 20px;border-top:1px solid rgba(255,255,255,.14);}
 .operator-page .powered-by{color:#9fb2cf;font-size:10px;font-weight:700;line-height:1.35;margin:0 0px 12px;}
 .operator-page .powered-by strong{color:#c8d5e8;}
-.operator-page .powered-logos{margin:0 0px 14px; overflow: hidden; opacity:.95;}
-.operator-page .plogo-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;}
+.operator-page .powered-logos{margin:0 0px 14px;overflow:hidden;opacity:.95;gap:8px;}
+.operator-page .partnership-label{color:#9fb2cf;font-size:9px;font-weight:700;letter-spacing:.08em;line-height:1;text-transform:uppercase;text-align:center;}
+.operator-page .plogo-row{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;}
 .operator-page .plogo-row.center{justify-content:center;}
 .operator-page .plogo{display:block;flex:0 0 auto;height:auto;overflow:hidden;}
 .operator-page .plogo image{display:block;}
@@ -161,9 +162,7 @@
 .operator-page .gm-live-label{font-size:15px;font-weight:800;fill:#203455;letter-spacing:0;paint-order:stroke;stroke:#fff;stroke-width:4;stroke-linejoin:round;pointer-events:none;user-select:none;}
 .operator-page .gm-live-ping{fill:none;stroke:#ff5d6c;stroke-width:2;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;animation:gmLivePing 2s ease-out infinite;}
 .operator-page .gm-live-ping-delay{animation-delay:1s;}
-.operator-page .gm-live-tip-wrap{opacity:0;pointer-events:none;transition:opacity .14s ease;}
-.operator-page .gm-live-zone:hover .gm-live-tip-wrap,
-.operator-page .gm-live-zone:focus .gm-live-tip-wrap{opacity:1;}
+.operator-page .gm-live-tip-wrap{opacity:1;pointer-events:none;}
 .operator-page .gm-live-tip{width:236px;background:#fff;border:1px solid rgba(222,228,238,.9);border-radius:10px;padding:13px 13px 12px;box-shadow:0 18px 36px rgba(29,43,67,.22);font-family:'Inter',sans-serif;color:#17243a;}
 .operator-page .gm-live-tip-name{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:900;line-height:1.1;margin-bottom:7px;}
 .operator-page .gm-live-tip-name span{width:9px;height:9px;border-radius:50%;flex-shrink:0;}

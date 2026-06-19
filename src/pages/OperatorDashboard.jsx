@@ -230,6 +230,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   const [showIncNotif, setShowIncNotif] = useState(true)
   const [selectedReportIssueId, setSelectedReportIssueId] = useState(reportIssues[1].id)
   const [inc20234Resolved, setInc20234Resolved] = useState(false)
+  const [activeLiveZoneName, setActiveLiveZoneName] = useState(null)
   const timers = useRef([])
   const simulatorBodyRef = useRef(null)
   const simulatorStepRefs = useRef([])
@@ -264,6 +265,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
         }
       : GM_ZONE_STATUS.Trafford,
   }
+  const activeLiveZone = GM_GEO.boroughs.find((borough) => borough.name === activeLiveZoneName)
 
   const scrollSimulatorToStep = (index) => {
     const body = simulatorBodyRef.current
@@ -413,7 +415,7 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.4"></circle></svg>
       Circles
     </div>
-    <div className="nav-section intelligence">Intelligence</div>
+    <div className="nav-section intelligence">HCLTech Intelligence</div>
     <div className={navClass('reports')} onClick={() => goTo('reports')}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><polyline points="14,3 14,8 19,8"></polyline></svg>
       Reports
@@ -425,18 +427,19 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
   </nav>
   <div className="sf">
     <div className="powered-by">Powered by :</div>
-    <div className="powered-logos" aria-label="Powered by GreySkies, Circles, and HCLTech">
+    <div className="powered-logos" aria-label="Powered by HCLTech in partnership with Circles and GreySkies">
       <div className="plogo-row center">
         <svg className="plogo plogo-hcl" viewBox="0 4.5 53 11" preserveAspectRatio="xMidYMid meet" role="img" aria-label="HCLTech">
           <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
         </svg>
       </div>
+      <div className="partnership-label">In partnership with</div>
       <div className="plogo-row">
-        <svg className="plogo plogo-greyskies" viewBox="65 1.5 81 17" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GreySkies">
+        <svg className="plogo plogo-circles" viewBox="158 2.5 60 15" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Circles">
           <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
         </svg>
         <span className="plogo-sep"></span>
-        <svg className="plogo plogo-circles" viewBox="158 2.5 60 15" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Circles">
+        <svg className="plogo plogo-greyskies" viewBox="65 1.5 81 17" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GreySkies">
           <image href="/powered-logo.svg" x="0" y="0" width="220" height="20"></image>
         </svg>
       </div>
@@ -519,7 +522,6 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                   const color = GM_STATUS_COLOR[meta.status]
                   const dotX = borough.c[0] - 46
                   const labelX = borough.c[0] - 34
-                  const tip = getGmTooltipPosition(borough.c)
 
                   return (
                     <g
@@ -528,6 +530,10 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                       tabIndex={0}
                       role="button"
                       aria-label={`${borough.name}: ${meta.label}`}
+                      onMouseEnter={() => setActiveLiveZoneName(borough.name)}
+                      onMouseLeave={() => setActiveLiveZoneName((current) => (current === borough.name ? null : current))}
+                      onFocus={() => setActiveLiveZoneName(borough.name)}
+                      onBlur={() => setActiveLiveZoneName((current) => (current === borough.name ? null : current))}
                     >
                       <path className="gm-live-shape" d={borough.d} />
                       {meta.status === 'bad' && (
@@ -538,9 +544,18 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                       )}
                       <circle className="gm-live-dot" cx={dotX} cy={borough.c[1] - 5} r="4.5" style={{ fill: color }} />
                       <text className="gm-live-label" x={labelX} y={borough.c[1]}>{borough.name}</text>
-                      <foreignObject className="gm-live-tip-wrap" x={tip.x} y={tip.y} width={GM_TOOLTIP_WIDTH} height={GM_TOOLTIP_HEIGHT}>
+                    </g>
+                  )
+                })}
+                {activeLiveZone && (() => {
+                  const meta = liveZoneStatus[activeLiveZone.name] || { status: 'good', label: 'Healthy', note: 'All systems nominal' }
+                  const color = GM_STATUS_COLOR[meta.status]
+                  const tip = getGmTooltipPosition(activeLiveZone.c)
+
+                  return (
+                    <foreignObject className="gm-live-tip-wrap" x={tip.x} y={tip.y} width={GM_TOOLTIP_WIDTH} height={GM_TOOLTIP_HEIGHT}>
                         <div xmlns="http://www.w3.org/1999/xhtml" className="gm-live-tip">
-                          <div className="gm-live-tip-name"><span style={{ background: color }}></span>{borough.name}</div>
+                          <div className="gm-live-tip-name"><span style={{ background: color }}></span>{activeLiveZone.name}</div>
                           <div className={`gm-live-tip-status ${meta.status}`}>{meta.label}</div>
                           <div className="gm-live-tip-row"><span>Status</span><strong>{meta.note}</strong></div>
                           {meta.severity && <div className="gm-live-tip-row"><span>Severity</span><strong>{meta.severity}</strong></div>}
@@ -549,9 +564,8 @@ export default function OperatorDashboard({ initialPage = 'dashboard' }) {
                           {meta.detail && <div className="gm-live-tip-row"><span>Detail</span><strong>{meta.detail}</strong></div>}
                         </div>
                       </foreignObject>
-                    </g>
                   )
-                })}
+                })()}
               </svg>
             </div>
           </div>
